@@ -1,0 +1,1105 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="mongodb," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.2" />
+
+
+
+
+
+
+<meta name="description" content="MongoDB运行状态、性能监控，分析">
+<meta name="keywords" content="mongodb">
+<meta property="og:type" content="article">
+<meta property="og:title" content="MongoDB运行状态、性能监控，分析">
+<meta property="og:url" content="http://www.harmap.com/2011/10/26/mongodb-running-state-performance-monitoring-analysis/index.html">
+<meta property="og:site_name" content="Harmap">
+<meta property="og:description" content="MongoDB运行状态、性能监控，分析">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://www.harmap.com/post-images/2011-10/mongod_stat-300x46.png">
+<meta property="og:image" content="http://www.harmap.com/post-images/2011-10/mongod-localhost.png">
+<meta property="og:image" content="http://www.harmap.com/post-images/2011-10/mms.png">
+<meta property="og:updated_time" content="2017-08-30T07:18:09.024Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="MongoDB运行状态、性能监控，分析">
+<meta name="twitter:description" content="MongoDB运行状态、性能监控，分析">
+<meta name="twitter:image" content="http://www.harmap.com/post-images/2011-10/mongod_stat-300x46.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.2',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: 'A2TJOVGMYM',
+      apiKey: '69da235de3e7b2b945e07a7c6f84696c',
+      indexName: 'harmapIndex',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://www.harmap.com/2011/10/26/mongodb-running-state-performance-monitoring-analysis/"/>
+
+
+
+
+
+  <title>MongoDB运行状态、性能监控，分析 | Harmap</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+    
+    <a href="https://github.com/beango"><img style="position: absolute; top: 0; left: 0; border: 0;" src="https://camo.githubusercontent.com/82b228a3648bf44fc1163ef44c62fcc60081495e/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f6c6566745f7265645f6161303030302e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_left_red_aa0000.png"></a>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Harmap</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  
+  <div class="algolia-popup popup search-popup">
+    <div class="algolia-search">
+      <div class="algolia-search-input-icon">
+        <i class="fa fa-search"></i>
+      </div>
+      <div class="algolia-search-input" id="algolia-search-input"></div>
+    </div>
+
+    <div class="algolia-results">
+      <div id="algolia-stats"></div>
+      <div id="algolia-hits"></div>
+      <div id="algolia-pagination" class="algolia-pagination"></div>
+    </div>
+
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+  </div>
+
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://www.harmap.com/2011/10/26/mongodb-running-state-performance-monitoring-analysis/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Jon">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Harmap">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">MongoDB运行状态、性能监控，分析</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2011-10-26T00:00:00+08:00">
+                2011-10-26
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/default/" itemprop="url" rel="index">
+                    <span itemprop="name">default</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+             <span id="/2011/10/26/mongodb-running-state-performance-monitoring-analysis/" class="leancloud_visitors" data-flag-title="MongoDB运行状态、性能监控，分析">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+              <div class="post-description">
+                  MongoDB运行状态、性能监控，分析
+              </div>
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>这篇文章的目的是让你知道怎么了解你正在运行的Mongdb是否健康。</p>
+<p>###mongostat详解</p>
+<p><img src="/post-images/2011-10/mongod_stat-300x46.png" title="mongod_stat" alt="mongostat" style="float:right;"><br>mongostat是mongdb自带的状态检测工具，在命令行下使用。它会间隔固定时间获取mongodb的当前运行状态，并输出。如果你发现数据库突然变慢或者有其他问题的话，你第一手的操作就考虑采用mongostat来查看mongo的状态。</p>
+<p>它的输出有以下几列：</p>
+<ul>
+<li>inserts/s 每秒插入次数</li>
+<li>query/s 每秒查询次数</li>
+<li>update/s 每秒更新次数</li>
+<li>delete/s 每秒删除次数</li>
+<li>getmore/s 每秒执行getmore次数</li>
+<li>command/s 每秒的命令数，比以上插入、查找、更新、删除的综合还多，还统计了别的命令</li>
+<li>flushs/s 每秒执行fsync将数据写入硬盘的次数。</li>
+<li>mapped/s 所有的被mmap的数据量，单位是MB，</li>
+<li>vsize 虚拟内存使用量，单位MB</li>
+<li>res 物理内存使用量，单位MB</li>
+<li>faults/s 每秒访问失败数（只有Linux有），数据被交换出物理内存，放到swap。不要超过100，否则就是机器内存太小，造成频繁swap写入。此时要升级内存或者扩展</li>
+<li>locked % 被锁的时间百分比，尽量控制在50%以下吧</li>
+<li>idx miss % 索引不命中所占百分比。如果太高的话就要考虑索引是不是少了</li>
+<li>q t|r|w 当Mongodb接收到太多的命令而数据库被锁住无法执行完成，它会将命令加入队列。这一栏显示了总共、读、写3个队列的长度，都为0的话表示mongo毫无压力。高并发时，一般队列值会升高。</li>
+<li>conn 当前连接数</li>
+<li>time 时间戳</li>
+</ul>
+<p>###使用profiler</p>
+<p>类似于MySQL的slow log, MongoDB可以监控所有慢的以及不慢的查询。</p>
+<p>Profiler默认是关闭的，你可以选择全部开启，或者有慢查询的时候开启。</p>
+<pre><code>&gt; use test
+switched to db test
+&gt; db.setProfilingLevel(2);
+{&quot;was&quot; : 0 , &quot;slowms&quot; : 100, &quot;ok&quot; : 1} // &quot;was&quot; is the old setting
+&gt; db.getProfilingLevel()
+2
+</code></pre><p>查看Profile日志</p>
+<pre><code>&gt; db.system.profile.find().sort({$natural:-1})
+{&quot;ts&quot; : &quot;Thu Jan 29 2009 15:19:32 GMT-0500 (EST)&quot; , &quot;info&quot; :
+&quot;query test.$cmd ntoreturn:1 reslen:66 nscanned:0 query: { profile: 2 } nreturned:1 bytes:50&quot; ,
+&quot;millis&quot; : 0} ...
+</code></pre><p>3个字段的意义</p>
+<ul>
+<li>ts：时间戳</li>
+<li>info：具体的操作</li>
+<li>millis：操作所花时间，毫秒</li>
+</ul>
+<p>不多说，此处有<a href="http://www.mongodb.org/display/DOCS/Database+Profiler" target="_blank" rel="external">官方文档</a>。注意，造成满查询可能是索引的问题，也可能是数据不在内存造成因此磁盘读入造成。</p>
+<p>###使用Web控制台</p>
+<p><a href="/post-images/2011-10/mongod-localhost.png"><img src="/post-images/2011-10/mongod-localhost.png" alt="mongodb web
+monitor" title="mongodb web monitor"></a>Mongodb自带了Web控制台，默认和数据服务一同开启。他的端口在Mongodb数据库服务器端口的基础上加1000，如果是默认的Mongodb数据服务端口(Which is 27017)，则相应的Web端口为28017这个页面可以看到</p>
+<ul>
+<li>当前Mongodb的所有连接</li>
+<li>各个数据库和Collection的访问统计，包括：Reads, Writes, Queries, GetMores ,Inserts, Updates, Removes</li>
+<li>写锁的状态</li>
+<li>以及日志文件的最后几百行（CentOS+10gen yum安装的mongodb默认的日志文件位于/var/log/mongo/mongod.log)</li>
+</ul>
+<p>可以参考右边的截图</p>
+<h2 id="db-stat"><a href="#db-stat" class="headerlink" title="db.stat()"></a>db.stat()</h2><p>获取当前数据库的信息，比如Obj总数、数据库总大小、平均Obj大小等</p>
+<pre><code>&gt; use test
+switched to db test
+&gt; db.stats()
+{
+    &quot;collections&quot; : 9,
+    &quot;objects&quot; : 4278845,
+    &quot;avgObjSize&quot; : 224.56603031892953,
+    &quot;dataSize&quot; : 960883236,
+    &quot;storageSize&quot; : 1195438080,
+    &quot;numExtents&quot; : 59,
+    &quot;indexes&quot; : 13,
+    &quot;indexSize&quot; : 801931264,
+    &quot;fileSize&quot; : 6373244928,
+    &quot;ok&quot; : 1
+}
+</code></pre><h2 id="db-serverStatus"><a href="#db-serverStatus" class="headerlink" title="db.serverStatus()"></a>db.serverStatus()</h2><p>获取服务器的状态</p>
+<pre><code>{
+    &quot;version&quot; : &quot;1.6.5&quot;,
+    &quot;uptime&quot; : 7208469,
+    &quot;uptimeEstimate&quot; : 7138829,
+    &quot;localTime&quot; : &quot;Wed Oct 26 2011 22:23:07 GMT+0800 (CST)&quot;,
+    &quot;globalLock&quot; : {
+        &quot;totalTime&quot; : 7208469556704,
+        &quot;lockTime&quot; : 4959693717,
+        &quot;ratio&quot; : 0.000688036992871448,
+        &quot;currentQueue&quot; : {
+            &quot;total&quot; : 0,
+            &quot;readers&quot; : 0,
+            &quot;writers&quot; : 0
+        }
+    },
+    &quot;mem&quot; : {
+        &quot;bits&quot; : 64,
+        &quot;resident&quot; : 3131,
+        &quot;virtual&quot; : 6172,
+        &quot;supported&quot; : true,
+        &quot;mapped&quot; : 4927
+    },
+    &quot;connections&quot; : {
+        &quot;current&quot; : 402,
+        &quot;available&quot; : 2599
+    },
+    &quot;extra_info&quot; : {
+        &quot;note&quot; : &quot;fields vary by platform&quot;,
+        &quot;heap_usage_bytes&quot; : 832531920,
+        &quot;page_faults&quot; : 8757
+    },
+    &quot;indexCounters&quot; : {
+        &quot;btree&quot; : {
+            &quot;accesses&quot; : 2821726,
+            &quot;hits&quot; : 2821725,
+            &quot;misses&quot; : 1,
+            &quot;resets&quot; : 0,
+            &quot;missRatio&quot; : 3.543930204420982e-7
+        }
+    },
+    &quot;backgroundFlushing&quot; : {
+        &quot;flushes&quot; : 120133,
+        &quot;total_ms&quot; : 73235923,
+        &quot;average_ms&quot; : 609.6236920746173,
+        &quot;last_ms&quot; : 1332,
+        &quot;last_finished&quot; : &quot;Wed Oct 26 2011 22:22:23 GMT+0800 (CST)&quot;
+    },
+    &quot;cursors&quot; : {
+        &quot;totalOpen&quot; : 0,
+        &quot;clientCursors_size&quot; : 0,
+        &quot;timedOut&quot; : 238392
+    },
+    &quot;repl&quot; : {
+        &quot;ismaster&quot; : true
+    },
+    &quot;opcounters&quot; : {
+        &quot;insert&quot; : 269351,
+        &quot;query&quot; : 19331151,
+        &quot;update&quot; : 14199331,
+        &quot;delete&quot; : 1,
+        &quot;getmore&quot; : 145575,
+        &quot;command&quot; : 55982302
+    },
+    &quot;asserts&quot; : {
+        &quot;regular&quot; : 0,
+        &quot;warning&quot; : 0,
+        &quot;msg&quot; : 0,
+        &quot;user&quot; : 27,
+        &quot;rollovers&quot; : 0
+    },
+    &quot;ok&quot; : 1
+}
+</code></pre><p>需要关心的地方：</p>
+<ul>
+<li>connections 当前连接和可用连接数，听过一个同行介绍过，mongodb最大处理到2000个连接就不行了（要根据你的机器性能和业务来设定），所以设大了没意义。设个合理值的话，到达这个值mongodb就拒绝新的连接请求，避免被太多的连接拖垮。</li>
+<li>indexCounters:btree:misses 索引的不命中数，和hits的比例高就要考虑索引是否正确建立。你看我的”missRatio” : 3.543930204420982e-7，很健康吧。所以miss率在mongostat里面也可以看</li>
+<li>其他的都能自解释，也不是查看mongo健康状况的关键，就不说明了。</li>
+</ul>
+<h2 id="db-currentOp"><a href="#db-currentOp" class="headerlink" title="db.currentOp()"></a>db.currentOp()</h2><p>Mongodb<br>的命令一般很快就完成，但是在一台繁忙的机器或者有比较慢的命令时，你可以通过db.currentOp()获取当前正在执行的操作。</p>
+<p>在没有负载的机器上，该命令基本上都是返回空的</p>
+<pre><code>&gt;  db.currentOp()
+{ &quot;inprog&quot; : [ ] }
+</code></pre><p>以下是一个有负载的机器上得到的返回值样例：</p>
+<pre><code>{ &quot;opid&quot; : &quot;shard3:466404288&quot;, &quot;active&quot; : false, &quot;waitingForLock&quot; : false, &quot;op&quot; : &quot;query&quot;, &quot;ns&quot; : &quot;sd.usersEmails&quot;, &quot;query&quot; : { }, &quot;client_s&quot; : &quot;10.121.13.8:34473&quot;, &quot;desc&quot; : &quot;conn&quot; },
+</code></pre><p>字段名字都能自解释。如果你发现一个操作太长，把数据库卡死的话，可以用这个命令杀死他</p>
+<pre><code>&gt; db.killOp(&quot;shard3:466404288&quot;)
+</code></pre><h2 id="MongoDB-Monitoring-Service"><a href="#MongoDB-Monitoring-Service" class="headerlink" title="MongoDB Monitoring Service"></a>MongoDB Monitoring Service</h2><p><a href="/post-images/2011-10/mms.png"><img src="/post-images/2011-10/mms.png" alt="" title="mms"></a></p>
+<p>MongoDB Monitoring Service(MMS)是Mongodb厂商提供的监控服务，可以在网页和Android客户端上监控你的MongoDB状况。请<a href="http://blog.nosqlfan.com/html/3171.html" target="_blank" rel="external">参考</a></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+    <div style="border: 1px solid black">
+        <div style="margin-left:10px">
+        <span style="font-weight:blod">版权声明</span>
+        <br>
+        <p style="font-size: 10px;line-height: 30px">
+	  <a href="/" style="color:#258FC6">Jon's blog</a> by <a href="/" style="color:#258FC6">Jon</a> is licensed under a <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/" style="color:#258FC6">Creative Commons BY-NC-ND 4.0 International License</a>.<br>
+	  由<a href="/" style="color:#258FC6">Jon</a>创作并维护的<a href="/" style="color:#258FC6">Jon's blog</a>博客采用<a href="https://creativecommons.org/licenses/by-nc-nd/4.0/" style="color:#258FC6">创作共用保留署名-非商业-禁止演绎4.0国际许可证</a>。<br>
+	  本文首发于<a href="/" style="color:#258FC6">Jon</a> 博客（ <a href="/" style="color:#258FC6">Jon</a> ），如若转载请注明出处，版权所有，侵权必究。<br>
+	  本文地址：<a href="/2011/10/26/mongodb-running-state-performance-monitoring-analysis/" title="MongoDB运行状态、性能监控，分析">http://www.harmap.com/2011/10/26/mongodb-running-state-performance-monitoring-analysis/</a>
+        </p>
+        </div>
+    </div>
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/mongodb/" rel="tag"># mongodb</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2011/10/15/mongodb-architecture/" rel="next" title="MongoDB构架图分享">
+                <i class="fa fa-chevron-left"></i> MongoDB构架图分享
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2011/11/20/exploring-redis/" rel="prev" title="Redis系统性介绍">
+                Redis系统性介绍 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div id="lv-container" data-id="city" data-uid="MTAyMC8zMDcwMC83MjU1"></div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.gif"
+               alt="Jon" />
+          <p class="site-author-name" itemprop="name">Jon</p>
+           
+              <p class="site-description motion-element" itemprop="description"></p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">140</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">10</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">78</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/beango" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                    
+                      GitHub
+                    
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#db-stat"><span class="nav-number">1.</span> <span class="nav-text">db.stat()</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#db-serverStatus"><span class="nav-number">2.</span> <span class="nav-text">db.serverStatus()</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#db-currentOp"><span class="nav-number">3.</span> <span class="nav-text">db.currentOp()</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#MongoDB-Monitoring-Service"><span class="nav-number">4.</span> <span class="nav-text">MongoDB Monitoring Service</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Jon</span>
+
+  
+  <script src="https://s22.cnzz.com/z_stat.php?id=1266098112&web_id=1266098112" language="JavaScript"></script>
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+  <span class="post-meta-divider">|</span>
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">NexT.Mist</a> v5.1.2</div>
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+    <div id="lv-container" data-id="city" data-uid="MTAyMC8zMDcwMC83MjU1">
+<script type="text/javascript">
+   (function(d, s) {
+       var j, e = d.getElementsByTagName(s)[0];
+
+       if (typeof LivereTower === 'function') { return; }
+
+       j = d.createElement(s);
+       j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+       j.async = true;
+
+       e.parentNode.insertBefore(j, e);
+   })(document, 'script');
+</script>
+<noscript>Ϊ����ʹ�����������۹����뼤��JavaScript</noscript>
+</div>
+<!-- City�氲װ��������� -->
+  
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  
+  
+  <link rel="stylesheet" href="/lib/algolia-instant-search/instantsearch.min.css">
+
+  
+  
+  <script src="/lib/algolia-instant-search/instantsearch.min.js"></script>
+  
+
+  <script src="/js/src/algolia-search.js?v=5.1.2"></script>
+
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.4.js"></script>
+  <script>AV.initialize("yLPoVJgltlWhPaAI6t5JvbpB-gzGzoHsz", "E4XFKjXzrcUUGbELoAsyQ4Y2");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

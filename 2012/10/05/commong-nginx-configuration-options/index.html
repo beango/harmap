@@ -1,0 +1,1069 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="nginx," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.2" />
+
+
+
+
+
+
+<meta name="description" content="常见的nginx的配置选项">
+<meta name="keywords" content="nginx">
+<meta property="og:type" content="article">
+<meta property="og:title" content="常见的nginx的配置选项">
+<meta property="og:url" content="http://www.harmap.com/2012/10/05/commong-nginx-configuration-options/index.html">
+<meta property="og:site_name" content="Harmap">
+<meta property="og:description" content="常见的nginx的配置选项">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2017-08-21T03:13:33.098Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="常见的nginx的配置选项">
+<meta name="twitter:description" content="常见的nginx的配置选项">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.2',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: 'A2TJOVGMYM',
+      apiKey: '69da235de3e7b2b945e07a7c6f84696c',
+      indexName: 'harmapIndex',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://www.harmap.com/2012/10/05/commong-nginx-configuration-options/"/>
+
+
+
+
+
+  <title>常见的nginx的配置选项 | Harmap</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+    
+    <a href="https://github.com/beango"><img style="position: absolute; top: 0; left: 0; border: 0;" src="https://camo.githubusercontent.com/82b228a3648bf44fc1163ef44c62fcc60081495e/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f6c6566745f7265645f6161303030302e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_left_red_aa0000.png"></a>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Harmap</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  
+  <div class="algolia-popup popup search-popup">
+    <div class="algolia-search">
+      <div class="algolia-search-input-icon">
+        <i class="fa fa-search"></i>
+      </div>
+      <div class="algolia-search-input" id="algolia-search-input"></div>
+    </div>
+
+    <div class="algolia-results">
+      <div id="algolia-stats"></div>
+      <div id="algolia-hits"></div>
+      <div id="algolia-pagination" class="algolia-pagination"></div>
+    </div>
+
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+  </div>
+
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://www.harmap.com/2012/10/05/commong-nginx-configuration-options/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Jon">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Harmap">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">常见的nginx的配置选项</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2012-10-05T00:00:00+08:00">
+                2012-10-05
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/default/" itemprop="url" rel="index">
+                    <span itemprop="name">default</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+             <span id="/2012/10/05/commong-nginx-configuration-options/" class="leancloud_visitors" data-flag-title="常见的nginx的配置选项">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+              <div class="post-description">
+                  常见的nginx的配置选项
+              </div>
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>英文原文：<a href="http://agiletesting.blogspot.jp/2010/06/commong-nginx-configuration-options.html" target="_blank" rel="external">agiletesting.blogspot.jp</a>，编译：<a href="http://www.php-oa.com/2012/04/01/commong-nginx-configuration-options.html" target="_blank" rel="external">扶凯</a></p>
+<p>对于想学  Nginx 的新人，这是一个非常不错的简明指导。</p>
+<p>Google 上有丰富的 Nginx 的教程和样本配置文件，但很多时候时候，配置这些是需要一些技巧。</p>
+<p><strong>Include 文件</strong></p>
+<p>不要在您的主 nginx.conf文件中配置所有的东西,你需要分成几个较小的文件。您的同事会很感激你的。比如我的结构,我定义我的upstream 的 pool 的为一个文件，和一个文件定义 location 处理服务器上其它的应用。</p>
+<p>例子：<br> upstreams.conf</p>
+<pre><code>upstream cluster1 {
+ fair;
+ server app01:7060;
+ server app01:7061;
+ server app02:7060;
+ server app02:7061;
+}
+upstream cluster2 {
+ fair;
+ server app01:7071;
+ server app01:7072;
+ server app02:7071;
+ server app02:7072;
+}
+</code></pre><p>locations.conf</p>
+<pre><code>location / {
+ root /var/www;
+ include cache-control.conf;
+ index index.html index.htm;
+}
+location /services/service1 {
+ proxy_pass_header Server;
+ proxy_set_header Host $http_host;
+ proxy_redirect off;
+ proxy_set_header X-Real-IP $remote_addr;
+ proxy_set_header X-Scheme $scheme;
+ proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+ add_header Pragma &quot;no-cache&quot;;
+ proxy_pass http://cluster1/;
+}
+location /services/service2 {
+ proxy_pass_header Server;
+ proxy_set_header Host $http_host;
+ proxy_redirect off;
+ proxy_set_header X-Real-IP $remote_addr;
+ proxy_set_header X-Scheme $scheme;
+ proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+ add_header Pragma &quot;no-cache&quot;;
+ proxy_pass http://cluster2/service2;
+}
+</code></pre><p>servers.conf</p>
+<pre><code>server {
+ listen 80;
+ include locations.conf;
+}
+</code></pre><p>现在，你的nginx.conf看起来非常的干净和简单（仍然可以分开更多,来更包括文件，比如分离gzip的配置选项)</p>
+<pre><code>nginx.conf
+
+worker_processes 4;
+worker_rlimit_nofile 10240;
+events {
+  worker_connections 10240;
+  use epoll;
+}
+http {
+  include upstreams.conf;
+  include mime.types;
+  default_type application/octet-stream;
+  log_format custom &apos;$remote_addr - $remote_user [$time_local] &apos;
+  &apos;&quot;$request&quot; $status $bytes_sent &apos;
+  &apos;&quot;$http_referer&quot; &quot;$http_user_agent&quot; &quot;$http_x_forwarded_for&quot; $request_time&apos;;
+  access_log /usr/local/nginx/logs/access.log custom;
+  proxy_buffering off;
+  sendfile on;
+  tcp_nopush on;
+  tcp_nodelay on;
+  gzip on;
+  gzip_min_length 10240;
+  gzip_proxied expired no-cache no-store private auth;
+  gzip_types text/plain text/css text/xml text/javascript application/x-javascript application/xml application/xml+rss image/svg+xml application/x-font-ttf application/vnd.ms-fontobject;
+  gzip_disable &quot;MSIE [1-6]\.&quot;;
+  # proxy cache config
+  proxy_cache_path /mnt/nginx_cache levels=1:2
+  keys_zone=one:10m
+  inactive=7d max_size=10g;
+  proxy_temp_path /var/tmp/nginx_temp;
+  proxy_next_upstream error;
+  include servers.conf;
+}
+</code></pre><p>这 nginx.conf 文件是使用了一些不太常见的配置选项，它值得指出其中一些重要的。</p>
+<p><strong>多个 worker 的配置(进程)</strong></p>
+<p>如果你的 Nginx 是多个 CPU 和多核,需要配置成多核的数量比较好:</p>
+<pre><code>worker_processes 4;
+</code></pre><p><strong>增加打开的文件句柄</strong></p>
+<p>如果Nginx服务很大的流量,增加最大可以打开的文件句柄还是很有用的,因为默认只有1024个.可以使用 ‘ulimit -n’ 看到当前系统中的设置.</p>
+<pre><code>worker_rlimit_nofile 10240;
+</code></pre><p><strong>定制的日志</strong></p>
+<p>可以看看 log_format 和 access_log 二个选项的设置.通常我们有几个参数最常使用,象 “\$http_x_forwarded_for” 可以见到 load balancer 的设备之前的 IP, 还有 “\$request_time” 可以见到 Nginx 来处理这个主动所花的时间.</p>
+<p><strong>压缩</strong></p>
+<p>压缩对于文本非常非常的有用.</p>
+<pre><code>gzip on;
+gzip_min_length 10240;
+gzip_proxied expired no-cache no-store private auth;
+gzip_types text/plain text/css text/xml text/javascript application/x-javascript application/xml application/xml+rss image/svg+xml application/x-font-ttf application/vnd.ms-fontobject;
+gzip_disable &quot;MSIE [1-6]\.&quot;;
+</code></pre><p><strong>代理的选项</strong></p>
+<p>这些选项可以在每个 location 中设置.</p>
+<pre><code>proxy_pass_header Server;
+proxy_set_header Host $http_host;
+proxy_redirect off;
+proxy_set_header X-Real-IP $remote_addr;
+proxy_set_header X-Scheme $scheme;
+proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+add_header Pragma &quot;no-cache&quot;;
+</code></pre><p>这个中加了一个定制的参数,就是 ‘no-cache’,这样就不会使用 cache 的内容了.</p>
+<p><strong>代理的 Cache</strong></p>
+<p>使用 Nginx 可以给一些文件来 cache 到本地来当 Cache 的服务器,需要设置 proxy_cache_path 和 proxy_temp_path 在你的 HTTP 的 directive 中.在 location 中配置.如果有你想 cache 的内容的话.</p>
+<pre><code>proxy_cache_path /mnt/nginx_cache levels=1:2
+keys_zone=one:10m
+inactive=7d max_size=10g;
+proxy_temp_path /var/tmp/nginx_temp;
+</code></pre><p>这可能还想增加一些其它的参数</p>
+<pre><code>proxy_cache one;
+proxy_cache_key mylocation.$request_uri;
+proxy_cache_valid 200 302 304 10m;
+proxy_cache_valid 301 1h;
+proxy_cache_valid any 1m;
+proxy_cache_use_stale error timeout invalid_header http_500 http_502 http_503 http_504 http_404;
+</code></pre><p><strong>HTTP caching options</strong></p>
+<p>有时你想使用其它的东西来做 Cache ,你可能需要指定怎么样 cache. 你可以给 cache 的信息的文件 include 到你的 root 的 location 中:</p>
+<pre><code>location / {
+ root /var/www;
+ include cache-control.conf;
+ index index.html index.htm;
+}
+</code></pre><p>你可以指定不同的头到于不同的文件</p>
+<pre><code># default cache 1 day
+expires +1d;
+if ($request_uri ~* &quot;^/services/.*$&quot;) {
+ expires +0d;
+ add_header Pragma &quot;no-cache&quot;;
+}
+if ($request_uri ~* &quot;^/(index.html)?$&quot;) {
+ expires +1h;
+}
+</code></pre><p><strong>SSL</strong></p>
+<p>如果你要配置 ssl 的连接的话</p>
+<pre><code>server {
+ server_name www.example.com;
+ listen 443;
+ ssl on;
+ ssl_certificate /usr/local/nginx/ssl/cert.pem;
+ ssl_certificate_key /usr/local/nginx/ssl/cert.key;
+ include locations.conf;
+}
+</code></pre>
+      
+    </div>
+    
+    
+    
+
+    
+    <div style="border: 1px solid black">
+        <div style="margin-left:10px">
+        <span style="font-weight:blod">版权声明</span>
+        <br>
+        <p style="font-size: 10px;line-height: 30px">
+	  <a href="/" style="color:#258FC6">Jon's blog</a> by <a href="/" style="color:#258FC6">Jon</a> is licensed under a <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/" style="color:#258FC6">Creative Commons BY-NC-ND 4.0 International License</a>.<br>
+	  由<a href="/" style="color:#258FC6">Jon</a>创作并维护的<a href="/" style="color:#258FC6">Jon's blog</a>博客采用<a href="https://creativecommons.org/licenses/by-nc-nd/4.0/" style="color:#258FC6">创作共用保留署名-非商业-禁止演绎4.0国际许可证</a>。<br>
+	  本文首发于<a href="/" style="color:#258FC6">Jon</a> 博客（ <a href="/" style="color:#258FC6">Jon</a> ），如若转载请注明出处，版权所有，侵权必究。<br>
+	  本文地址：<a href="/2012/10/05/commong-nginx-configuration-options/" title="常见的nginx的配置选项">http://www.harmap.com/2012/10/05/commong-nginx-configuration-options/</a>
+        </p>
+        </div>
+    </div>
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/nginx/" rel="tag"># nginx</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2012/09/21/nginx-load-balancing/" rel="next" title="解析 Nginx 负载均衡">
+                <i class="fa fa-chevron-left"></i> 解析 Nginx 负载均衡
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2012/10/09/rabbitmq-install/" rel="prev" title="RabbitMQ安装及使用">
+                RabbitMQ安装及使用 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div id="lv-container" data-id="city" data-uid="MTAyMC8zMDcwMC83MjU1"></div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+
+      <section class="site-overview sidebar-panel sidebar-panel-active">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.gif"
+               alt="Jon" />
+          <p class="site-author-name" itemprop="name">Jon</p>
+           
+              <p class="site-description motion-element" itemprop="description"></p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">140</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">10</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">78</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/beango" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                    
+                      GitHub
+                    
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Jon</span>
+
+  
+  <script src="https://s22.cnzz.com/z_stat.php?id=1266098112&web_id=1266098112" language="JavaScript"></script>
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+  <span class="post-meta-divider">|</span>
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">NexT.Mist</a> v5.1.2</div>
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+    <div id="lv-container" data-id="city" data-uid="MTAyMC8zMDcwMC83MjU1">
+<script type="text/javascript">
+   (function(d, s) {
+       var j, e = d.getElementsByTagName(s)[0];
+
+       if (typeof LivereTower === 'function') { return; }
+
+       j = d.createElement(s);
+       j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+       j.async = true;
+
+       e.parentNode.insertBefore(j, e);
+   })(document, 'script');
+</script>
+<noscript>Ϊ����ʹ�����������۹����뼤��JavaScript</noscript>
+</div>
+<!-- City�氲װ��������� -->
+  
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  
+  
+  <link rel="stylesheet" href="/lib/algolia-instant-search/instantsearch.min.css">
+
+  
+  
+  <script src="/lib/algolia-instant-search/instantsearch.min.js"></script>
+  
+
+  <script src="/js/src/algolia-search.js?v=5.1.2"></script>
+
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.4.js"></script>
+  <script>AV.initialize("yLPoVJgltlWhPaAI6t5JvbpB-gzGzoHsz", "E4XFKjXzrcUUGbELoAsyQ4Y2");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

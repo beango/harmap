@@ -1,0 +1,1426 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="go," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.2" />
+
+
+
+
+
+
+<meta name="description" content="Go 语言 12 条最佳实践">
+<meta name="keywords" content="go">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Go 语言 12 条最佳实践">
+<meta property="og:url" content="http://www.harmap.com/2013/08/02/twelve-go-best-practices/index.html">
+<meta property="og:site_name" content="Harmap">
+<meta property="og:description" content="Go 语言 12 条最佳实践">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2017-08-21T03:13:33.148Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Go 语言 12 条最佳实践">
+<meta name="twitter:description" content="Go 语言 12 条最佳实践">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.2',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: 'A2TJOVGMYM',
+      apiKey: '69da235de3e7b2b945e07a7c6f84696c',
+      indexName: 'harmapIndex',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://www.harmap.com/2013/08/02/twelve-go-best-practices/"/>
+
+
+
+
+
+  <title>Go 语言 12 条最佳实践 | Harmap</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+    
+    <a href="https://github.com/beango"><img style="position: absolute; top: 0; left: 0; border: 0;" src="https://camo.githubusercontent.com/82b228a3648bf44fc1163ef44c62fcc60081495e/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f6c6566745f7265645f6161303030302e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_left_red_aa0000.png"></a>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Harmap</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  
+  <div class="algolia-popup popup search-popup">
+    <div class="algolia-search">
+      <div class="algolia-search-input-icon">
+        <i class="fa fa-search"></i>
+      </div>
+      <div class="algolia-search-input" id="algolia-search-input"></div>
+    </div>
+
+    <div class="algolia-results">
+      <div id="algolia-stats"></div>
+      <div id="algolia-hits"></div>
+      <div id="algolia-pagination" class="algolia-pagination"></div>
+    </div>
+
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+  </div>
+
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://www.harmap.com/2013/08/02/twelve-go-best-practices/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Jon">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Harmap">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Go 语言 12 条最佳实践</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2013-08-02T00:00:00+08:00">
+                2013-08-02
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/default/" itemprop="url" rel="index">
+                    <span itemprop="name">default</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+             <span id="/2013/08/02/twelve-go-best-practices/" class="leancloud_visitors" data-flag-title="Go 语言 12 条最佳实践">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+              <div class="post-description">
+                  Go 语言 12 条最佳实践
+              </div>
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>本文来自 Google 工程师 Francesc Campoy Flores 分享的幻灯片。内容包括：代码组织、API、并发最佳实践和一些推荐的相关资源。</p>
+<h3 id="最佳实践"><a href="#最佳实践" class="headerlink" title="最佳实践"></a>最佳实践</h3><p>维基百科的定义是：“最佳实践是一种方法或技术，其结果始终优于其他方式。”</p>
+<p>写Go代码的目标就是：</p>
+<ul>
+<li>简洁</li>
+<li>可读性强</li>
+<li>可维护性好</li>
+</ul>
+<h3 id="样例代码"><a href="#样例代码" class="headerlink" title="样例代码"></a>样例代码</h3><pre><code>type Gopher struct {
+    Name     string
+    Age      int32
+    FurColor color.Color
+}
+
+func (g *Gopher) DumpBinary(w io.Writer) error {
+    err := binary.Write(w, binary.LittleEndian, int32(len(g.Name)))
+    if err == nil {
+        _, err := w.Write([]byte(g.Name))
+        if err == nil {
+            err := binary.Write(w, binary.LittleEndian, g.Age)
+            if err == nil {
+                return binary.Write(w, binary.LittleEndian, g.FurColor)
+            }
+            return err
+        }
+        return err
+    }
+    return err
+}
+</code></pre><h3 id="避免嵌套的处理错误"><a href="#避免嵌套的处理错误" class="headerlink" title="避免嵌套的处理错误"></a>避免嵌套的处理错误</h3><pre><code>func (g *Gopher) DumpBinary(w io.Writer) error {
+    err := binary.Write(w, binary.LittleEndian, int32(len(g.Name)))
+    if err != nil {
+        return err
+    }
+    _, err = w.Write([]byte(g.Name))
+    if err != nil {
+        return err
+    }
+    err = binary.Write(w, binary.LittleEndian, g.Age)
+    if err != nil {
+        return err
+    }
+    return binary.Write(w, binary.LittleEndian, g.FurColor)
+}
+</code></pre><p>减少嵌套意味着提高代码的可读性</p>
+<h3 id="尽可能避免重复"><a href="#尽可能避免重复" class="headerlink" title="尽可能避免重复"></a>尽可能避免重复</h3><p>功能单一，代码更简洁</p>
+<pre><code>type binWriter struct {
+    w   io.Writer
+    err error
+}
+
+// Write writes a value into its writer using little endian.
+func (w *binWriter) Write(v interface{}) {
+    if w.err != nil {
+        return
+    }
+    w.err = binary.Write(w.w, binary.LittleEndian, v)
+}
+
+func (g *Gopher) DumpBinary(w io.Writer) error {
+    bw := &amp;binWriter{w: w}
+    bw.Write(int32(len(g.Name)))
+    bw.Write([]byte(g.Name))
+    bw.Write(g.Age)
+    bw.Write(g.FurColor)
+    return bw.err
+}
+</code></pre><h3 id="使用类型推断来处理特殊情况"><a href="#使用类型推断来处理特殊情况" class="headerlink" title="使用类型推断来处理特殊情况"></a>使用类型推断来处理特殊情况</h3><pre><code>// Write writes a value into its writer using little endian.
+func (w *binWriter) Write(v interface{}) {
+    if w.err != nil {
+        return
+    }
+    switch v.(type) {
+    case string:
+        s := v.(string)
+        w.Write(int32(len(s)))
+        w.Write([]byte(s))
+    default:
+        w.err = binary.Write(w.w, binary.LittleEndian, v)
+    }
+}
+
+func (g *Gopher) DumpBinary(w io.Writer) error {
+    bw := &amp;binWriter{w: w}
+    bw.Write(g.Name)
+    bw.Write(g.Age)
+    bw.Write(g.FurColor)
+    return bw.err
+}
+</code></pre><h3 id="类型推断的变量声明要短"><a href="#类型推断的变量声明要短" class="headerlink" title="类型推断的变量声明要短"></a>类型推断的变量声明要短</h3><pre><code>// Write write the given value into the writer using little endian.
+func (w *binWriter) Write(v interface{}) {
+    if w.err != nil {
+        return
+    }
+    switch v := v.(type) {
+    case string:
+        w.Write(int32(len(v)))
+        w.Write([]byte(v))
+    default:
+        w.err = binary.Write(w.w, binary.LittleEndian, v)
+    }
+}
+</code></pre><h3 id="函数适配器"><a href="#函数适配器" class="headerlink" title="函数适配器"></a>函数适配器</h3><pre><code>func init() {
+    http.HandleFunc(&quot;/&quot;, handler)
+}
+
+func handler(w http.ResponseWriter, r *http.Request) {
+    err := doThis()
+    if err != nil {
+        http.Error(w, err.Error(), http.StatusInternalServerError)
+        log.Printf(&quot;handling %q: %v&quot;, r.RequestURI, err)
+        return
+    }
+
+    err = doThat()
+    if err != nil {
+        http.Error(w, err.Error(), http.StatusInternalServerError)
+        log.Printf(&quot;handling %q: %v&quot;, r.RequestURI, err)
+        return
+    }
+}
+
+func init() {
+    http.HandleFunc(&quot;/&quot;, errorHandler(betterHandler))
+}
+
+func errorHandler(f func(http.ResponseWriter, *http.Request) error) http.HandlerFunc {
+    return func(w http.ResponseWriter, r *http.Request) {
+        err := f(w, r)
+        if err != nil {
+            http.Error(w, err.Error(), http.StatusInternalServerError)
+            log.Printf(&quot;handling %q: %v&quot;, r.RequestURI, err)
+        }
+    }
+}
+
+func betterHandler(w http.ResponseWriter, r *http.Request) error {
+    if err := doThis(); err != nil {
+        return fmt.Errorf(&quot;doing this: %v&quot;, err)
+    }
+
+    if err := doThat(); err != nil {
+        return fmt.Errorf(&quot;doing that: %v&quot;, err)
+    }
+    return nil
+}
+</code></pre><h2 id="如何组织代码"><a href="#如何组织代码" class="headerlink" title="如何组织代码"></a>如何组织代码</h2><h3 id="将重要的代码放前面"><a href="#将重要的代码放前面" class="headerlink" title="将重要的代码放前面"></a>将重要的代码放前面</h3><p>版权信息，构建信息，包说明文档</p>
+<p>Import 声明，相关的包连起来构成组，组与组之间用空行隔开。</p>
+<pre><code>import (
+    &quot;fmt&quot;
+    &quot;io&quot;
+    &quot;log&quot;
+
+    &quot;code.google.com/p/go.net/websocket&quot;
+)
+</code></pre><p>接下来代码以最重要的类型开始，以工具函数和类型结束。</p>
+<h3 id="如何编写文档"><a href="#如何编写文档" class="headerlink" title="如何编写文档"></a>如何编写文档</h3><p>包名之前要写相关文档</p>
+<pre><code>// Package playground registers an HTTP handler at &quot;/compile&quot; that
+// proxies requests to the golang.org playground service.
+package playground
+</code></pre><p>导出的标识符（译者按：大写的标识符为导出标识符）会出现在 <code>godoc</code>中，所以要正确的编写文档。</p>
+<pre><code>// Author represents the person who wrote and/or is presenting the document.
+type Author struct {
+    Elem []Elem
+}
+
+// TextElem returns the first text elements of the author details.
+// This is used to display the author&apos; name, job title, and company
+// without the contact details.
+func (p *Author) TextElem() (elems []Elem) {
+</code></pre><p><a href="http://godoc.org/code.google.com/p/go.talks/pkg/present#Author" target="_blank" rel="external">生成的文档示例</a></p>
+<p><a href="http://blog.golang.org/godoc-documenting-go-code" target="_blank" rel="external">Gocode: 文档化Go代码</a></p>
+<h3 id="越简洁越好"><a href="#越简洁越好" class="headerlink" title="越简洁越好"></a>越简洁越好</h3><p>长代码往往不是最好的.试着使用能自解释的最短的变量名.</p>
+<ul>
+<li>用 <code>MarshalIndent</code> ，别用 <code>MarshalWithIndentation</code>.</li>
+</ul>
+<p>别忘了包名会出现在你选择的标识符前面</p>
+<ul>
+<li><p>In package <code>encoding/json</code> we find the type <code>Encoder</code>, not <code>JSONEncoder</code>.</p>
+</li>
+<li><p>It is referred as <code>json.Encoder</code>.</p>
+</li>
+</ul>
+<p>有多个文件的包</p>
+<p>需要将一个包分散到多个文件中吗?</p>
+<ul>
+<li>避免行数非常多的文件</li>
+</ul>
+<p>标准库中 <code>net/http</code> 包有47个文件，共计 15734 行.</p>
+<ul>
+<li>拆分代码并测试</li>
+</ul>
+<p><code>net/http/cookie.go</code> 和 <code>net/http/cookie_test.go</code>  都是 <code>http</code>包的一部分.</p>
+<p>测试代码 只有 在测试时才会编译.</p>
+<ul>
+<li>多文件包的文档编写</li>
+</ul>
+<p>如果一个包中有多个文件, 可以很方便的创建一个 <code>doc.go</code>文件，包含包文档信息.</p>
+<h3 id="让包可以”go-get”到"><a href="#让包可以”go-get”到" class="headerlink" title="让包可以”go get”到"></a>让包可以”go get”到</h3><p>一些包将来可能会被复用，另外一些不会.</p>
+<p>定义了一些网络协议的包可能会在开发一个可执行命令时复用.</p>
+<p><a href="https://github.com/bradfitz/camlistore" target="_blank" rel="external">github.com/bradfitz/camlistore</a></p>
+<h2 id="接口"><a href="#接口" class="headerlink" title="接口"></a>接口</h2><h3 id="你需要什么"><a href="#你需要什么" class="headerlink" title="你需要什么"></a>你需要什么</h3><p>让我们以之前的Gopher类型为例</p>
+<pre><code>type Gopher struct {
+    Name     string
+    Age      int32
+    FurColor color.Color
+}
+</code></pre><p>我们可以定义这个方法</p>
+<pre><code>func (g *Gopher) DumpToFile(f *os.File) error {
+</code></pre><p>但是使用一个具体的类型会让代码难以测试，因此我们使用接口.</p>
+<pre><code>func (g *Gopher) DumpToReadWriter(rw io.ReadWriter) error {
+</code></pre><p>进而，由于使用的是接口，我们可以只请求我们需要的.</p>
+<pre><code>func (g *Gopher) DumpToWriter(f io.Writer) error {
+</code></pre><h3 id="让独立的包彼此独立"><a href="#让独立的包彼此独立" class="headerlink" title="让独立的包彼此独立"></a>让独立的包彼此独立</h3><pre><code>import (
+    &quot;code.google.com/p/go.talks/2013/bestpractices/funcdraw/drawer&quot;
+    &quot;code.google.com/p/go.talks/2013/bestpractices/funcdraw/parser&quot;
+)
+
+ // Parse the text into an executable function.
+    f, err := parser.Parse(text)
+    if err != nil {
+        log.Fatalf(&quot;parse %q: %v&quot;, text, err)
+    }
+
+    // Create an image plotting the function.
+    m := drawer.Draw(f, *width, *height, *xmin, *xmax)
+
+    // Encode the image into the standard output.
+    err = png.Encode(os.Stdout, m)
+    if err != nil {
+        log.Fatalf(&quot;encode image: %v&quot;, err)
+    }
+</code></pre><h3 id="解析"><a href="#解析" class="headerlink" title="解析"></a>解析</h3><pre><code>type ParsedFunc struct {
+    text string
+    eval func(float64) float64
+}
+
+func Parse(text string) (*ParsedFunc, error) {
+    f, err := parse(text)
+    if err != nil {
+        return nil, err
+    }
+    return &amp;ParsedFunc{text: text, eval: f}, nil
+}
+
+func (f *ParsedFunc) Eval(x float64) float64 { return f.eval(x) }
+func (f *ParsedFunc) String() string         { return f.text }
+</code></pre><h3 id="描绘"><a href="#描绘" class="headerlink" title="描绘"></a>描绘</h3><pre><code>import (
+    &quot;image&quot;
+
+    &quot;code.google.com/p/go.talks/2013/bestpractices/funcdraw/parser&quot;
+)
+
+// Draw draws an image showing a rendering of the passed ParsedFunc.
+func DrawParsedFunc(f parser.ParsedFunc) image.Image {
+</code></pre><p>使用接口来避免依赖.</p>
+<pre><code>import &quot;image&quot;
+
+// Function represent a drawable mathematical function.
+type Function interface {
+    Eval(float64) float64
+}
+
+// Draw draws an image showing a rendering of the passed Function.
+func Draw(f Function) image.Image {
+</code></pre><h3 id="测试"><a href="#测试" class="headerlink" title="测试"></a>测试</h3><p>使用接口而不是具体类型让测试更简洁.</p>
+<pre><code>package drawer
+
+import (
+    &quot;math&quot;
+    &quot;testing&quot;
+)
+
+type TestFunc func(float64) float64
+
+func (f TestFunc) Eval(x float64) float64 { return f(x) }
+
+var (
+    ident = TestFunc(func(x float64) float64 { return x })
+    sin   = TestFunc(math.Sin)
+)
+
+func TestDraw_Ident(t *testing.T) {
+    m := Draw(ident)
+    // Verify obtained image.
+</code></pre><h3 id="在接口中避免并发"><a href="#在接口中避免并发" class="headerlink" title="在接口中避免并发"></a>在接口中避免并发</h3><pre><code>func doConcurrently(job string, err chan error) {
+    go func() {
+        fmt.Println(&quot;doing job&quot;, job)
+        time.Sleep(1 * time.Second)
+        err &lt;- errors.New(&quot;something went wrong!&quot;)
+    }()
+}
+
+func main() {
+    jobs := []string{&quot;one&quot;, &quot;two&quot;, &quot;three&quot;}
+
+    errc := make(chan error)
+    for _, job := range jobs {
+        doConcurrently(job, errc)
+    }
+    for _ = range jobs {
+        if err := &lt;-errc; err != nil {
+            fmt.Println(err)
+        }
+    }
+}
+</code></pre><p>如果我们想串行的使用它会怎样?</p>
+<pre><code>func do(job string) error {
+    fmt.Println(&quot;doing job&quot;, job)
+    time.Sleep(1 * time.Second)
+    return errors.New(&quot;something went wrong!&quot;)
+}
+
+func main() {
+    jobs := []string{&quot;one&quot;, &quot;two&quot;, &quot;three&quot;}
+
+    errc := make(chan error)
+    for _, job := range jobs {
+        go func(job string) {
+            errc &lt;- do(job)
+        }(job)
+    }
+    for _ = range jobs {
+        if err := &lt;-errc; err != nil {
+            fmt.Println(err)
+        }
+    }
+}
+</code></pre><p>暴露同步的接口，这样异步调用这些接口会简单.</p>
+<h2 id="并发的最佳实践"><a href="#并发的最佳实践" class="headerlink" title="并发的最佳实践"></a>并发的最佳实践</h2><h3 id="使用goroutines管理状态"><a href="#使用goroutines管理状态" class="headerlink" title="使用goroutines管理状态"></a>使用goroutines管理状态</h3><p>使用chan或者有chan的结构体和goroutine通信</p>
+<pre><code>type Server struct{ quit chan bool }
+
+func NewServer() *Server {
+    s := &amp;Server{make(chan bool)}
+    go s.run()
+    return s
+}
+
+func (s *Server) run() {
+    for {
+        select {
+        case &lt;-s.quit:
+            fmt.Println(&quot;finishing task&quot;)
+            time.Sleep(time.Second)
+            fmt.Println(&quot;task done&quot;)
+            s.quit &lt;- true
+            return
+        case &lt;-time.After(time.Second):
+            fmt.Println(&quot;running task&quot;)
+        }
+    }
+}
+
+func (s *Server) Stop() {
+    fmt.Println(&quot;server stopping&quot;)
+    s.quit &lt;- true
+    &lt;-s.quit
+    fmt.Println(&quot;server stopped&quot;)
+}
+
+func main() {
+    s := NewServer()
+    time.Sleep(2 * time.Second)
+    s.Stop()
+}
+</code></pre><h3 id="使用带缓存的chan，来避免goroutine内存泄漏"><a href="#使用带缓存的chan，来避免goroutine内存泄漏" class="headerlink" title="使用带缓存的chan，来避免goroutine内存泄漏"></a>使用带缓存的chan，来避免goroutine内存泄漏</h3><pre><code>func sendMsg(msg, addr string) error {
+    conn, err := net.Dial(&quot;tcp&quot;, addr)
+    if err != nil {
+        return err
+    }
+    defer conn.Close()
+    _, err = fmt.Fprint(conn, msg)
+    return err
+}
+
+func main() {
+    addr := []string{&quot;localhost:8080&quot;, &quot;http://google.com&quot;}
+    err := broadcastMsg(&quot;hi&quot;, addr)
+
+    time.Sleep(time.Second)
+
+    if err != nil {
+        fmt.Println(err)
+        return
+    }
+    fmt.Println(&quot;everything went fine&quot;)
+}
+
+func broadcastMsg(msg string, addrs []string) error {
+    errc := make(chan error)
+    for _, addr := range addrs {
+        go func(addr string) {
+            errc &lt;- sendMsg(msg, addr)
+            fmt.Println(&quot;done&quot;)
+        }(addr)
+    }
+
+    for _ = range addrs {
+        if err := &lt;-errc; err != nil {
+            return err
+        }
+    }
+    return nil
+}
+</code></pre><ul>
+<li>goroutine阻塞在chan写操作</li>
+<li>goroutine保存了一个chan的引用</li>
+<li><p>chan永远不会垃圾回收</p>
+<pre><code>func broadcastMsg(msg string, addrs []string) error {
+    errc := make(chan error, len(addrs))
+    for _, addr := range addrs {
+        go func(addr string) {
+            errc &lt;- sendMsg(msg, addr)
+            fmt.Println(&quot;done&quot;)
+        }(addr)
+    }
+
+    for _ = range addrs {
+        if err := &lt;-errc; err != nil {
+            return err
+        }
+    }
+    return nil
+}
+</code></pre></li>
+</ul>
+<p>如果我们不能预测channel的容量呢?</p>
+<h3 id="使用quit-chan避免goroutine内存泄漏"><a href="#使用quit-chan避免goroutine内存泄漏" class="headerlink" title="使用quit chan避免goroutine内存泄漏"></a>使用quit chan避免goroutine内存泄漏</h3><pre><code>func broadcastMsg(msg string, addrs []string) error {
+    errc := make(chan error)
+    quit := make(chan struct{})
+
+    defer close(quit)
+
+    for _, addr := range addrs {
+        go func(addr string) {
+            select {
+            case errc &lt;- sendMsg(msg, addr):
+                fmt.Println(&quot;done&quot;)
+            case &lt;-quit:
+                fmt.Println(&quot;quit&quot;)
+            }
+        }(addr)
+    }
+
+    for _ = range addrs {
+        if err := &lt;-errc; err != nil {
+            return err
+        }
+    }
+    return nil
+}
+</code></pre><h3 id="12条最佳实践"><a href="#12条最佳实践" class="headerlink" title="12条最佳实践"></a>12条最佳实践</h3><p> ​1. 避免嵌套的处理错误  </p>
+<ol>
+<li>尽可能避免重复  </li>
+<li>将重要的代码放前面  </li>
+<li>为代码编写文档  </li>
+<li>越简洁越好  </li>
+<li>讲包拆分到多个文件中  </li>
+<li>让包”go get”到  </li>
+<li>按需请求  </li>
+<li>让独立的包彼此独立  </li>
+<li>在接口中避免并发  </li>
+<li>使用goroutine管理状态  </li>
+<li>避免goroutine内存泄漏</li>
+</ol>
+<h3 id="一些链接"><a href="#一些链接" class="headerlink" title="一些链接"></a>一些链接</h3><p>资源</p>
+<ul>
+<li>Go 首页 <a href="http://golang.org/" target="_blank" rel="external">golang.org</a></li>
+<li>Go 交互式体验 <a href="http://tour.golang.org/" target="_blank" rel="external">tour.golang.org</a></li>
+</ul>
+<p>其他演讲</p>
+<ul>
+<li>用go做词法扫描 <a href="http://www.youtube.com/watch?v=HxaD_trXwRE" target="_blank" rel="external">video</a></li>
+<li>并发不是并行 <a href="http://vimeo.com/49718712" target="_blank" rel="external">video</a></li>
+<li>Go并发模式 <a href="http://www.youtube.com/watch?v=f6kdp27TYZs" target="_blank" rel="external">video</a></li>
+<li>Go高级并发模式 <a href="http://www.youtube.com/watch?v=QDDwwePbDtw" target="_blank" rel="external">video</a></li>
+</ul>
+<h3 id="谢谢"><a href="#谢谢" class="headerlink" title="谢谢"></a>谢谢</h3><p>Francesc Campoy Flores</p>
+<p>Gopher at Google</p>
+<p><a href="http://twitter.com/campoy83" target="_blank" rel="external">@campoy83</a></p>
+<p><a href="http://campoy.cat/+" target="_blank" rel="external">http://campoy.cat/+</a></p>
+<p><a href="http://golang.org/" target="_blank" rel="external">http://golang.org</a></p>
+<p>原文链接： <a href="http://t.cn/zQ6eR2E" target="_blank" rel="external">Francesc Campoy Flores</a><br>翻译：<a href="http://blog.jobbole.com" target="_blank" rel="external">伯乐在线</a> - <a href="http://blog.jobbole.com/author/codefor/" target="_blank" rel="external">Codefor</a><br>译文链接：<a href="http://blog.jobbole.com/44608/" target="_blank" rel="external">http://blog.jobbole.com/44608/</a></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+    <div style="border: 1px solid black">
+        <div style="margin-left:10px">
+        <span style="font-weight:blod">版权声明</span>
+        <br>
+        <p style="font-size: 10px;line-height: 30px">
+	  <a href="/" style="color:#258FC6">Jon's blog</a> by <a href="/" style="color:#258FC6">Jon</a> is licensed under a <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/" style="color:#258FC6">Creative Commons BY-NC-ND 4.0 International License</a>.<br>
+	  由<a href="/" style="color:#258FC6">Jon</a>创作并维护的<a href="/" style="color:#258FC6">Jon's blog</a>博客采用<a href="https://creativecommons.org/licenses/by-nc-nd/4.0/" style="color:#258FC6">创作共用保留署名-非商业-禁止演绎4.0国际许可证</a>。<br>
+	  本文首发于<a href="/" style="color:#258FC6">Jon</a> 博客（ <a href="/" style="color:#258FC6">Jon</a> ），如若转载请注明出处，版权所有，侵权必究。<br>
+	  本文地址：<a href="/2013/08/02/twelve-go-best-practices/" title="Go 语言 12 条最佳实践">http://www.harmap.com/2013/08/02/twelve-go-best-practices/</a>
+        </p>
+        </div>
+    </div>
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/go/" rel="tag"># go</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2013/08/01/reliable-file-updates-with-python/" rel="next" title="使用 Python 进行稳定可靠的文件操作">
+                <i class="fa fa-chevron-left"></i> 使用 Python 进行稳定可靠的文件操作
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2013/08/08/java-lo-logbuffer/" rel="prev" title="Java 日志缓存机制的实现">
+                Java 日志缓存机制的实现 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div id="lv-container" data-id="city" data-uid="MTAyMC8zMDcwMC83MjU1"></div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.gif"
+               alt="Jon" />
+          <p class="site-author-name" itemprop="name">Jon</p>
+           
+              <p class="site-description motion-element" itemprop="description"></p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">140</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">10</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">78</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/beango" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                    
+                      GitHub
+                    
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#最佳实践"><span class="nav-number">1.</span> <span class="nav-text">最佳实践</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#样例代码"><span class="nav-number">2.</span> <span class="nav-text">样例代码</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#避免嵌套的处理错误"><span class="nav-number">3.</span> <span class="nav-text">避免嵌套的处理错误</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#尽可能避免重复"><span class="nav-number">4.</span> <span class="nav-text">尽可能避免重复</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#使用类型推断来处理特殊情况"><span class="nav-number">5.</span> <span class="nav-text">使用类型推断来处理特殊情况</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#类型推断的变量声明要短"><span class="nav-number">6.</span> <span class="nav-text">类型推断的变量声明要短</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#函数适配器"><span class="nav-number">7.</span> <span class="nav-text">函数适配器</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#如何组织代码"><span class="nav-number"></span> <span class="nav-text">如何组织代码</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#将重要的代码放前面"><span class="nav-number">1.</span> <span class="nav-text">将重要的代码放前面</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#如何编写文档"><span class="nav-number">2.</span> <span class="nav-text">如何编写文档</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#越简洁越好"><span class="nav-number">3.</span> <span class="nav-text">越简洁越好</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#让包可以”go-get”到"><span class="nav-number">4.</span> <span class="nav-text">让包可以”go get”到</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#接口"><span class="nav-number"></span> <span class="nav-text">接口</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#你需要什么"><span class="nav-number">1.</span> <span class="nav-text">你需要什么</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#让独立的包彼此独立"><span class="nav-number">2.</span> <span class="nav-text">让独立的包彼此独立</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#解析"><span class="nav-number">3.</span> <span class="nav-text">解析</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#描绘"><span class="nav-number">4.</span> <span class="nav-text">描绘</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#测试"><span class="nav-number">5.</span> <span class="nav-text">测试</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#在接口中避免并发"><span class="nav-number">6.</span> <span class="nav-text">在接口中避免并发</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#并发的最佳实践"><span class="nav-number"></span> <span class="nav-text">并发的最佳实践</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#使用goroutines管理状态"><span class="nav-number">1.</span> <span class="nav-text">使用goroutines管理状态</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#使用带缓存的chan，来避免goroutine内存泄漏"><span class="nav-number">2.</span> <span class="nav-text">使用带缓存的chan，来避免goroutine内存泄漏</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#使用quit-chan避免goroutine内存泄漏"><span class="nav-number">3.</span> <span class="nav-text">使用quit chan避免goroutine内存泄漏</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#12条最佳实践"><span class="nav-number">4.</span> <span class="nav-text">12条最佳实践</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#一些链接"><span class="nav-number">5.</span> <span class="nav-text">一些链接</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#谢谢"><span class="nav-number">6.</span> <span class="nav-text">谢谢</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Jon</span>
+
+  
+  <script src="https://s22.cnzz.com/z_stat.php?id=1266098112&web_id=1266098112" language="JavaScript"></script>
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+  <span class="post-meta-divider">|</span>
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">NexT.Mist</a> v5.1.2</div>
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+    <div id="lv-container" data-id="city" data-uid="MTAyMC8zMDcwMC83MjU1">
+<script type="text/javascript">
+   (function(d, s) {
+       var j, e = d.getElementsByTagName(s)[0];
+
+       if (typeof LivereTower === 'function') { return; }
+
+       j = d.createElement(s);
+       j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+       j.async = true;
+
+       e.parentNode.insertBefore(j, e);
+   })(document, 'script');
+</script>
+<noscript>Ϊ����ʹ�����������۹����뼤��JavaScript</noscript>
+</div>
+<!-- City�氲װ��������� -->
+  
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  
+  
+  <link rel="stylesheet" href="/lib/algolia-instant-search/instantsearch.min.css">
+
+  
+  
+  <script src="/lib/algolia-instant-search/instantsearch.min.js"></script>
+  
+
+  <script src="/js/src/algolia-search.js?v=5.1.2"></script>
+
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.4.js"></script>
+  <script>AV.initialize("yLPoVJgltlWhPaAI6t5JvbpB-gzGzoHsz", "E4XFKjXzrcUUGbELoAsyQ4Y2");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

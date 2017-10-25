@@ -1,0 +1,1146 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Goc,buffer," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.2" />
+
+
+
+
+
+
+<meta name="description" content="复用Go的内存buffer">
+<meta name="keywords" content="Goc,buffer">
+<meta property="og:type" content="article">
+<meta property="og:title" content="复用Go的内存buffer">
+<meta property="og:url" content="http://www.harmap.com/2013/10/08/recycling-memory-buffers-in-go/index.html">
+<meta property="og:site_name" content="Harmap">
+<meta property="og:description" content="复用Go的内存buffer">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://www.harmap.com/post-images/2013-10/no1.png">
+<meta property="og:image" content="http://www.harmap.com/post-images/2013-10/no2.png">
+<meta property="og:image" content="http://www.harmap.com/post-images/2013-10/no3.png">
+<meta property="og:updated_time" content="2017-08-30T07:19:08.829Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="复用Go的内存buffer">
+<meta name="twitter:description" content="复用Go的内存buffer">
+<meta name="twitter:image" content="http://www.harmap.com/post-images/2013-10/no1.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.2',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: 'A2TJOVGMYM',
+      apiKey: '69da235de3e7b2b945e07a7c6f84696c',
+      indexName: 'harmapIndex',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://www.harmap.com/2013/10/08/recycling-memory-buffers-in-go/"/>
+
+
+
+
+
+  <title>复用Go的内存buffer | Harmap</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+    
+    <a href="https://github.com/beango"><img style="position: absolute; top: 0; left: 0; border: 0;" src="https://camo.githubusercontent.com/82b228a3648bf44fc1163ef44c62fcc60081495e/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f6c6566745f7265645f6161303030302e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_left_red_aa0000.png"></a>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Harmap</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  
+  <div class="algolia-popup popup search-popup">
+    <div class="algolia-search">
+      <div class="algolia-search-input-icon">
+        <i class="fa fa-search"></i>
+      </div>
+      <div class="algolia-search-input" id="algolia-search-input"></div>
+    </div>
+
+    <div class="algolia-results">
+      <div id="algolia-stats"></div>
+      <div id="algolia-hits"></div>
+      <div id="algolia-pagination" class="algolia-pagination"></div>
+    </div>
+
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+  </div>
+
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://www.harmap.com/2013/10/08/recycling-memory-buffers-in-go/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Jon">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Harmap">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">复用Go的内存buffer</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2013-10-08T00:00:00+08:00">
+                2013-10-08
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/default/" itemprop="url" rel="index">
+                    <span itemprop="name">default</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+             <span id="/2013/10/08/recycling-memory-buffers-in-go/" class="leancloud_visitors" data-flag-title="复用Go的内存buffer">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+              <div class="post-description">
+                  复用Go的内存buffer
+              </div>
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>之前我写过我们如何使用Lua<a href="http://blog.cloudflare.com/cloudflares-new-waf-compiling-to-lua" target="_blank" rel="external">实现我们新的网络应用程序防火墙</a>。在CloudFlare很流行的另一种语言是<a href="http://golang.org/" target="_blank" rel="external">Go</a>。在以前，我已经写过<a href="http://blog.cloudflare.com/go-at-cloudflare" target="_blank" rel="external">如何使用Go</a>来写网络服务，如<a href="http://blog.cloudflare.com/cacheing-the-uncacheable-cloudflares-railgun-73454" target="_blank" rel="external">Railgun</a>。</p>
+<p>使用像Go这样带有垃圾收集机制的语言编写长时间运行网络服务程序，内存管理是一个潜在的挑战。</p>
+<p>为了理解Go的内存管理，分析一些Go运行时代码还是有必要的。Go程序中有两个独立的线程，用来标记不再被程序使用的内存（这就是垃圾收集），并在其不再被使用时返还给操作系统（在Go代码中称为收割，scavenging）。</p>
+<p>下面是一个小程序，会生成很多内存垃圾，每秒生成一个5MB到10MB的字节数组。它维护了一个20个这样字节数组大小的内存池，随机丢弃内存池中的字节数组。这个程序用来模拟程序中经常发生的场景：程序的各个部分每时每刻都会分配内存，一些分配的内存一直都在使用，大多数分配的内存都不再使用。在一个Go写的网络程序中，在处理网络链接或请求的Go协程里，这种情况很容易发生。常常是这样的，Go协程分配内存块（比如分配一个slices来存储接收的数据），然后就不再使用。随着时间的积累，会有一系列的内存块被正在被处理的网络链接占用，也会有一些累计的来自那些被处理过的链接的内存垃圾。</p>
+<pre><code>package main
+
+import (  
+    &quot;fmt&quot;  
+    &quot;math/rand&quot;  
+    &quot;runtime&quot;  
+    &quot;time&quot;
+)
+
+func makeBuffer() []byte {  
+    return make([]byte, rand.Intn(5000000)+5000000)  
+}
+
+func main() {  
+    pool := make([][]byte, 20)
+
+    var m runtime.MemStats  
+    makes := 0  
+    for {  
+        b := makeBuffer()  
+        makes += 1
+        i := rand.Intn(len(pool))
+        pool[i] = b
+
+        time.Sleep(time.Second)
+
+        bytes := 0
+
+        for i := 0; i &lt; len(pool); i++ {
+            if pool[i] != nil {
+                bytes += len(pool[i])
+            }
+        }
+
+        runtime.ReadMemStats(&amp;m)
+        fmt.Printf(&quot;%d,%d,%d,%d,%d,%d\n&quot;, m.HeapSys, bytes, m.HeapAlloc,
+            m.HeapIdle, m.HeapReleased, makes)
+    }
+}
+</code></pre><p>这个程序使用<a href="#ReadMemStats">runtime.ReadMemStats</a>函数来获取堆大小的信息。这个函数会打印四个值：HeapSys （程序向操作系统请求的内存的字节数），HeapAlloc （当前堆中已经分配的字节数），HeapIdle （堆中未使用的字节数）和HeapReleased （归还给操作系统的字节数）。</p>
+<p>Go程序中垃圾收集运行的很频繁（查看GOGC环境变量来理解如何控制GC操作 ）。因此，在运行过程中，堆的大小会随着内存被标记为未使用（这回导致HeapAlloc 和HeapIdle 随之变化）而变化。收割线程只有在内存5分钟都没有使用才会释放内存，因此HeapReleased 并不经常变化。</p>
+<p>这是上面的程序运行10分钟生成的图表。</p>
+<p><img src="/post-images/2013-10/no1.png" alt="no1"></p>
+<p>(这个图以及下面的所有的图，左边的纵坐标是字节数，右边的纵坐标是Make的次数)</p>
+<p>红线表示实际上内存池字节数据占用的字节数。因为内存池大小是20个buffer，所以很快就上涨到150M左右。最上面的蓝线表示程序向操作系统请求的内存数量。最高达到375M左右。所以，程序使用了2.5倍实际需要的内存。</p>
+<p>随着程序读写内存，当垃圾收集发生时，堆中分配的大小和未使用的大小上下浮动。桔色的线正好是 makeBuffer()调用的次数。</p>
+<p>这类随着请求使用内存在垃圾收集程序中是很常见的（例如，论文<a href="http://cs.canisius.edu/~hertzm/gcmalloc-oopsla-2005.pdf" target="_blank" rel="external">Quantifying the Performance of Garbage Collection vs. Explicit Memory Management</a>）。随着程序的运行，堆中未使用的内存又被重新利用，很少会被释放给操作系统。</p>
+<p>解决这种问题的一个方法就是在程序中部分地手动管理内存。比如，使用一个管道，可以单独维护一个不再使用字节数组的内存池，当需要新的字节数组时，从内存池中拿（当内存池为空就生成新的字节数组）。</p>
+<p>这个程序可以这样重写：</p>
+<pre><code>package main
+
+import (
+    &quot;fmt&quot;
+    &quot;math/rand&quot;
+    &quot;runtime&quot;
+    &quot;time&quot;
+)
+
+func makeBuffer() []byte {
+    return make([]byte, rand.Intn(5000000)+5000000)
+}
+
+func main() {
+    pool := make([][]byte, 20)
+
+    buffer := make(chan []byte, 5)
+
+    var m runtime.MemStats
+    makes := 0
+    for {
+        var b []byte
+        select {
+        case b = &lt;-buffer:
+        default:
+            makes += 1
+            b = makeBuffer()
+        }
+
+        i := rand.Intn(len(pool))
+        if pool[i] != nil {
+            select {
+            case buffer &lt;- pool[i]:
+                pool[i] = nil
+            default:
+            }
+        }
+
+        pool[i] = b
+
+        time.Sleep(time.Second)
+
+        bytes := 0
+        for i := 0; i &lt; len(pool); i++ {
+            if pool[i] != nil {
+                bytes += len(pool[i])
+            }
+        }
+
+        runtime.ReadMemStats(&amp;m)
+        fmt.Printf(&quot;%d,%d,%d,%d,%d,%d\n&quot;, m.HeapSys, bytes, m.HeapAlloc,
+            m.HeapIdle, m.HeapReleased, makes)
+    }
+}
+</code></pre><p>下面是新的程序运行10分钟的效果：</p>
+<p><img src="/post-images/2013-10/no2.png" alt="no2"></p>
+<p>这张图就和上面的完全不同。内存池中的内存和从操作系统请求的内存很接近。垃圾收集器也基本不做什么。堆中只有很少量的未使用内存最终返还给操作系统。</p>
+<p>这种内存复用机制的关键是一个缓存的管道buffer。上面的代码中可以存储5个字节数组。当程序需要一个字节数组时，优先使用select从缓存的管道中去取:</p>
+<pre><code>select {
+    case b = &lt;-buffer:
+    default:
+        b = makeBuffer()
+}
+</code></pre><p>select永远不会阻塞因为如果buffer 管道中有字节数组，第一个分支生效，字节数组赋给了 b。如果管道是空的话（也就意味着receive会阻塞），default 分支会执行，并分配了一个新的字节数组。</p>
+<p>把字节数组放回到管道中使用了类似的无阻塞模式:</p>
+<pre><code>select {
+    case buffer &lt;- pool[i]:
+        pool[i] = nil
+    default:
+}
+</code></pre><p>如果buffer 管道已经满了，往管道里面发送就会阻塞。这种情况下，default分支执行，什么也不做。这种简单的机制可以用来安全的生成一个共享的内存池。由于管道通信对多go协程是安全的，这种机制也可以用于go协程的共享。</p>
+<p>实际上，我们在Go程序中使用了类似的技术。下面的代码是真实复用器的简化版。使用一个go协程处理字节数组的生成并在软件中共享给所有的go协程。两个管道get （获取一个新的字节数组）和give （返回字节数组到内存池中）在所有的通信中都被使用。</p>
+<p>复用器保存了一个返回的字节数组的链表，间断地丢弃那些时间太久，并不再会被复用（示例代码中，生命周期超过1分钟）的字节数组。这使得程序处理对字符数组的动态需求。</p>
+<pre><code>package main
+
+import (
+    &quot;container/list&quot;
+    &quot;fmt&quot;
+    &quot;math/rand&quot;
+    &quot;runtime&quot;
+    &quot;time&quot;
+)
+
+var makes int
+var frees int
+
+func makeBuffer() []byte {
+    makes += 1
+    return make([]byte, rand.Intn(5000000)+5000000)
+}
+
+type queued struct {
+    when time.Time
+    slice []byte
+}
+
+func makeRecycler() (get, give chan []byte) {
+    get = make(chan []byte)
+    give = make(chan []byte)
+
+    go func() {
+        q := new(list.List)
+        for {
+            if q.Len() == 0 {
+                q.PushFront(queued{when: time.Now(), slice: makeBuffer()})
+            }
+
+            e := q.Front()
+
+            timeout := time.NewTimer(time.Minute)
+            select {
+            case b := &lt;-give:
+                timeout.Stop()
+                q.PushFront(queued{when: time.Now(), slice: b})
+
+           case get &lt;- e.Value.(queued).slice:
+               timeout.Stop()
+               q.Remove(e)
+
+           case &lt;-timeout.C:
+               e := q.Front()
+               for e != nil {
+                   n := e.Next()
+                   if time.Since(e.Value.(queued).when) &gt; time.Minute {
+                       q.Remove(e)
+                       e.Value = nil
+                   }
+                   e = n
+               }
+           }
+       }
+
+    }()
+
+    return
+}
+
+func main() {
+    pool := make([][]byte, 20)
+
+    get, give := makeRecycler()
+
+    var m runtime.MemStats
+    for {
+        b := &lt;-get
+        i := rand.Intn(len(pool))
+        if pool[i] != nil {
+            give &lt;- pool[i]
+        }
+
+        pool[i] = b
+
+        time.Sleep(time.Second)
+
+        bytes := 0
+        for i := 0; i &lt; len(pool); i++ {
+            if pool[i] != nil {
+                bytes += len(pool[i])
+            }
+        }
+
+        runtime.ReadMemStats(&amp;m)
+        fmt.Printf(&quot;%d,%d,%d,%d,%d,%d,%d\n&quot;, m.HeapSys, bytes, m.HeapAlloc
+             m.HeapIdle, m.HeapReleased, makes, frees)
+    }
+}
+</code></pre><p>运行这个程序10分钟效果和第二个程序非常像：</p>
+<p><img src="/post-images/2013-10/no3.png" alt="no3"></p>
+<p>这些技术可以在程序员知道内存会被复用而不需要垃圾收集器参与时用来复用内存。它可以显著的减少程序需要内存的大小。并不仅限于字节数组。任何Go类型都可以用类似的行为进行复用。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+    <div style="border: 1px solid black">
+        <div style="margin-left:10px">
+        <span style="font-weight:blod">版权声明</span>
+        <br>
+        <p style="font-size: 10px;line-height: 30px">
+	  <a href="/" style="color:#258FC6">Jon's blog</a> by <a href="/" style="color:#258FC6">Jon</a> is licensed under a <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/" style="color:#258FC6">Creative Commons BY-NC-ND 4.0 International License</a>.<br>
+	  由<a href="/" style="color:#258FC6">Jon</a>创作并维护的<a href="/" style="color:#258FC6">Jon's blog</a>博客采用<a href="https://creativecommons.org/licenses/by-nc-nd/4.0/" style="color:#258FC6">创作共用保留署名-非商业-禁止演绎4.0国际许可证</a>。<br>
+	  本文首发于<a href="/" style="color:#258FC6">Jon</a> 博客（ <a href="/" style="color:#258FC6">Jon</a> ），如若转载请注明出处，版权所有，侵权必究。<br>
+	  本文地址：<a href="/2013/10/08/recycling-memory-buffers-in-go/" title="复用Go的内存buffer">http://www.harmap.com/2013/10/08/recycling-memory-buffers-in-go/</a>
+        </p>
+        </div>
+    </div>
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Goc/" rel="tag"># Goc</a>
+          
+            <a href="/tags/buffer/" rel="tag"># buffer</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2013/09/25/python-encodings-and-unicode/" rel="next" title="Python编码和Unicode">
+                <i class="fa fa-chevron-left"></i> Python编码和Unicode
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2013/10/11/why-registers-are-fast-and-ram-is-slow/" rel="prev" title="为什么寄存器比内存快？">
+                为什么寄存器比内存快？ <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div id="lv-container" data-id="city" data-uid="MTAyMC8zMDcwMC83MjU1"></div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+
+      <section class="site-overview sidebar-panel sidebar-panel-active">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.gif"
+               alt="Jon" />
+          <p class="site-author-name" itemprop="name">Jon</p>
+           
+              <p class="site-description motion-element" itemprop="description"></p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">140</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">10</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">78</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/beango" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                    
+                      GitHub
+                    
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Jon</span>
+
+  
+  <script src="https://s22.cnzz.com/z_stat.php?id=1266098112&web_id=1266098112" language="JavaScript"></script>
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+  <span class="post-meta-divider">|</span>
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">NexT.Mist</a> v5.1.2</div>
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+    <div id="lv-container" data-id="city" data-uid="MTAyMC8zMDcwMC83MjU1">
+<script type="text/javascript">
+   (function(d, s) {
+       var j, e = d.getElementsByTagName(s)[0];
+
+       if (typeof LivereTower === 'function') { return; }
+
+       j = d.createElement(s);
+       j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+       j.async = true;
+
+       e.parentNode.insertBefore(j, e);
+   })(document, 'script');
+</script>
+<noscript>Ϊ����ʹ�����������۹����뼤��JavaScript</noscript>
+</div>
+<!-- City�氲װ��������� -->
+  
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  
+  
+  <link rel="stylesheet" href="/lib/algolia-instant-search/instantsearch.min.css">
+
+  
+  
+  <script src="/lib/algolia-instant-search/instantsearch.min.js"></script>
+  
+
+  <script src="/js/src/algolia-search.js?v=5.1.2"></script>
+
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.4.js"></script>
+  <script>AV.initialize("yLPoVJgltlWhPaAI6t5JvbpB-gzGzoHsz", "E4XFKjXzrcUUGbELoAsyQ4Y2");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

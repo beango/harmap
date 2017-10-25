@@ -1,0 +1,920 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="Hexo, NexT" />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.2" />
+
+
+
+
+
+
+<meta name="description" content="NodeJS 和 Socket.io 中文入门教程">
+<meta property="og:type" content="article">
+<meta property="og:title" content="NodeJS 和 Socket.io 中文入门教程">
+<meta property="og:url" content="http://www.harmap.com/2013/07/01/nodejs-and-socketio-tutorial/index.html">
+<meta property="og:site_name" content="Harmap">
+<meta property="og:description" content="NodeJS 和 Socket.io 中文入门教程">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2017-08-21T03:13:33.144Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="NodeJS 和 Socket.io 中文入门教程">
+<meta name="twitter:description" content="NodeJS 和 Socket.io 中文入门教程">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.2',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: 'A2TJOVGMYM',
+      apiKey: '69da235de3e7b2b945e07a7c6f84696c',
+      indexName: 'harmapIndex',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://www.harmap.com/2013/07/01/nodejs-and-socketio-tutorial/"/>
+
+
+
+
+
+  <title>NodeJS 和 Socket.io 中文入门教程 | Harmap</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+    
+    <a href="https://github.com/beango"><img style="position: absolute; top: 0; left: 0; border: 0;" src="https://camo.githubusercontent.com/82b228a3648bf44fc1163ef44c62fcc60081495e/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f6c6566745f7265645f6161303030302e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_left_red_aa0000.png"></a>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Harmap</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  
+  <div class="algolia-popup popup search-popup">
+    <div class="algolia-search">
+      <div class="algolia-search-input-icon">
+        <i class="fa fa-search"></i>
+      </div>
+      <div class="algolia-search-input" id="algolia-search-input"></div>
+    </div>
+
+    <div class="algolia-results">
+      <div id="algolia-stats"></div>
+      <div id="algolia-hits"></div>
+      <div id="algolia-pagination" class="algolia-pagination"></div>
+    </div>
+
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+  </div>
+
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+    
+    
+    <div class="post-block page">
+      <header class="post-header">
+
+	<h1 class="post-title" itemprop="name headline">NodeJS 和 Socket.io 中文入门教程</h1>
+
+
+	<div class="post-meta">
+		<div class="post-description">NodeJS 和 Socket.io 中文入门教程</div>
+	</div>
+
+
+</header>
+
+      
+      
+      
+      <div class="post-body">
+        
+        
+          <p>NodeJS 最适合做得事情之一便是实时性应用，socket.io 给跨浏览器构建实时应用提供了完整的封装，可以在几种 transport 中自动切换，本贴板将翻译 socket.io 提供的入门使用教程。</p>
+<h2 id="socket-io-与-express-结合使用"><a href="#socket-io-与-express-结合使用" class="headerlink" title="socket.io 与 express 结合使用"></a>socket.io 与 express 结合使用</h2><p>我们可以使用 expressjs 处理页面请求以及 Ajax 请求，由于 express 是 nodejs 平台下最流行的 web 服务端开发框架，因此 socket.io 提供了方便的方式来绑定 express 服务。</p>
+<p><em>服务器端代码</em></p>
+<pre><code>var app = require(&apos;express&apos;).createServer()
+  , io = require(&apos;socket.io&apos;).listen(app);
+
+app.listen(80);
+
+app.get(&apos;/&apos;, function (req, res) {
+  res.sendfile(__dirname + &apos;/index.html&apos;);
+});
+
+io.sockets.on(&apos;connection&apos;, function (socket) {
+  socket.emit(&apos;news&apos;, { hello: &apos;world&apos; });
+  socket.on(&apos;my other event&apos;, function (data) {
+    console.log(data);
+  });
+});
+</code></pre><p><em>浏览器端代码</em></p>
+<pre><code>&lt;script src=&quot;/socket.io/socket.io.js&quot;&gt;&lt;/script&gt;
+&lt;script&gt;
+  var socket = io.connect(&apos;http://localhost&apos;);
+  socket.on(&apos;news&apos;, function (data) {
+    console.log(data);
+    socket.emit(&apos;my other event&apos;, { my: &apos;data&apos; });
+  });
+&lt;/script&gt;
+</code></pre><h2 id="发送以及接收自定义事件"><a href="#发送以及接收自定义事件" class="headerlink" title="发送以及接收自定义事件"></a>发送以及接收自定义事件</h2><p>除了 socket.io 提供的默认事件（如：<code>connect</code>, <code>message</code>, <code>disconnect</code>）外，我们还可以发送以及接收自定义事件的数据。</p>
+<p><em>示例代码</em></p>
+<pre><code>// note, io.listen(&lt;port&gt;) will create a http server for you
+var io = require(&apos;socket.io&apos;).listen(80);
+
+io.sockets.on(&apos;connection&apos;, function (socket) {
+  io.sockets.emit(&apos;this&apos;, { will: &apos;be received by everyone&apos;});
+
+  socket.on(&apos;private message&apos;, function (from, msg) {
+    console.log(&apos;I received a private message by &apos;, from, &apos; saying &apos;, msg);
+  });
+
+  socket.on(&apos;disconnect&apos;, function () {
+    io.sockets.emit(&apos;user disconnected&apos;);
+  });
+});
+</code></pre><h2 id="将数据关联并存储到当前连接的-socket"><a href="#将数据关联并存储到当前连接的-socket" class="headerlink" title="将数据关联并存储到当前连接的 socket"></a>将数据关联并存储到当前连接的 socket</h2><p>在一个会话周期中，我们大部分情况下都需要存储当前会话者的一些数据，来识别或者特定情形下获取这些数据。</p>
+<p><em>示例代码</em></p>
+<pre><code>var io = require(&apos;socket.io&apos;).listen(80);
+
+io.sockets.on(&apos;connection&apos;, function (socket) {
+  socket.on(&apos;set nickname&apos;, function (name) {
+    socket.set(&apos;nickname&apos;, name, function () {
+      socket.emit(&apos;ready&apos;);
+    });
+  });
+
+  socket.on(&apos;msg&apos;, function () {
+    socket.get(&apos;nickname&apos;, function (err, name) {
+      console.log(&apos;Chat message by &apos;, name);
+    });
+  });
+});
+</code></pre><p>非常建议使用这种方式来设置用户会话的数据。</p>
+<h2 id="发送、接收需要确认的数据"><a href="#发送、接收需要确认的数据" class="headerlink" title="发送、接收需要确认的数据"></a>发送、接收需要确认的数据</h2><p>在服务端与终端发送消息的过程中，如需要对方接收到消息后立刻得到确认，则只需在 <code>.send</code> 或 <code>.emit</code> 最后一个参数传入回调函数就可以了。</p>
+<p><em>服务端代码</em></p>
+<pre><code>var io = require(&apos;socket.io&apos;).listen(80);
+
+io.sockets.on(&apos;connection&apos;, function (socket) {
+  socket.on(&apos;ferret&apos;, function (name, fn) {
+    fn(&apos;woot&apos;);
+  });
+});
+</code></pre><p><em>客户端代码</em></p>
+<pre><code>&lt;script&gt;
+  var socket = io.connect(); // TIP: .connect with no args does auto-discovery
+  socket.on(&apos;connect&apos;, function () { // TIP: you can avoid listening on `connect` and listen on events directly too!
+    socket.emit(&apos;ferret&apos;, &apos;tobi&apos;, function (data) {
+      console.log(data); // data will be &apos;woot&apos;
+    });
+  });
+&lt;/script&gt;
+</code></pre><h2 id="socket-io-路由"><a href="#socket-io-路由" class="headerlink" title="socket.io 路由"></a>socket.io 路由</h2><p>官网称之为命名空间绑定，但我觉得用路由来形容似乎更好理解，上示例代码：</p>
+<pre><code>var io = require(&apos;socket.io&apos;).listen(80);
+
+var chat = io
+  .of(&apos;/chat&apos;)
+  .on(&apos;connection&apos;, function (socket) {
+    socket.emit(&apos;a message&apos;, {
+        that: &apos;only&apos;
+      , &apos;/chat&apos;: &apos;will get&apos;
+    });
+    chat.emit(&apos;a message&apos;, {
+        everyone: &apos;in&apos;
+      , &apos;/chat&apos;: &apos;will get&apos;
+    });
+  });
+
+var news = io
+  .of(&apos;/news&apos;)
+  .on(&apos;connection&apos;, function (socket) {
+    socket.emit(&apos;item&apos;, { news: &apos;item&apos; });
+  });
+</code></pre><p>当客户端连接 <code>/chat</code> 时，由 <code>chat</code> 来处理，连接 <code>/news</code> 由 <code>news</code> 来处理。</p>
+<pre><code>&lt;script&gt;
+  var chat = io.connect(&apos;http://localhost/chat&apos;)
+    , news = io.connect(&apos;http://localhost/news&apos;);
+
+  chat.on(&apos;connect&apos;, function () {
+    chat.emit(&apos;hi!&apos;);
+  });
+
+  news.on(&apos;news&apos;, function () {
+    news.emit(&apos;woot&apos;);
+  });
+&lt;/script&gt;
+</code></pre><h2 id="发送易变（volatile）的数据"><a href="#发送易变（volatile）的数据" class="headerlink" title="发送易变（volatile）的数据"></a>发送易变（volatile）的数据</h2><p>volatile意思大概是说，当服务器发送数据时，客户端因为各种原因不能正常接收，比如网络问题、或者正处于长连接的建立连接阶段。此时会让我们的应用变得suffer，那就需要考虑发送 volatile 数据。</p>
+<pre><code>var io = require(&apos;socket.io&apos;).listen(80);
+
+io.sockets.on(&apos;connection&apos;, function (socket) {
+  var tweets = setInterval(function () {
+    getBieberTweet(function (tweet) {
+      socket.volatile.emit(&apos;bieber tweet&apos;, tweet);
+    });
+  }, 100);
+
+  socket.on(&apos;disconnect&apos;, function () {
+    clearInterval(tweets);
+  });
+});
+</code></pre><p>按一回的理解，即使客户端没连线，一样可以这样发送，服务器会自动丢弃发送失败的数据。</p>
+<h2 id="认证与握手"><a href="#认证与握手" class="headerlink" title="认证与握手"></a>认证与握手</h2><p>我们可以设置认证。这样客户端在连接 socket.io 服务器时可以做一些安全或者特殊处理。</p>
+<p>socket.io 采用 TJ 风格的设置语法，如：</p>
+<pre><code>io.configure(function (){
+  io.set(&apos;authorization&apos;, function (handshakeData, callback) {
+    callback(null, true); // error first callback style 
+  });
+});
+</code></pre><p>上面的 authorrization 设置项即设置服务端的认证，后面回调函数的第一个参数 handshakeData 就附带了客户端传递过来的数据，比如头数据以及IP地址、请求的 URL 和 参数等，基于这些数据进行验证，如果验证符合你的业务逻辑，则调用<code>callback(null, true)</code> ，否则将错误放在callback的第一个参数，如<code>callback(&#39;need login&#39;)</code>;</p>
+<p>注，验证失败之后，socket 所注册的各种事件就不会被执行。</p>
+<pre><code>io.sockets.on(&apos;connection&apos;, function (socket) {
+    // 。。。。
+});
+</code></pre>
+        
+      </div>
+      
+      
+      
+    </div>
+    
+    
+    
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div id="lv-container" data-id="city" data-uid="MTAyMC8zMDcwMC83MjU1"></div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.gif"
+               alt="Jon" />
+          <p class="site-author-name" itemprop="name">Jon</p>
+           
+              <p class="site-description motion-element" itemprop="description"></p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">140</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">10</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">78</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/beango" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                    
+                      GitHub
+                    
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#socket-io-与-express-结合使用"><span class="nav-number">1.</span> <span class="nav-text">socket.io 与 express 结合使用</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#发送以及接收自定义事件"><span class="nav-number">2.</span> <span class="nav-text">发送以及接收自定义事件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#将数据关联并存储到当前连接的-socket"><span class="nav-number">3.</span> <span class="nav-text">将数据关联并存储到当前连接的 socket</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#发送、接收需要确认的数据"><span class="nav-number">4.</span> <span class="nav-text">发送、接收需要确认的数据</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#socket-io-路由"><span class="nav-number">5.</span> <span class="nav-text">socket.io 路由</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#发送易变（volatile）的数据"><span class="nav-number">6.</span> <span class="nav-text">发送易变（volatile）的数据</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#认证与握手"><span class="nav-number">7.</span> <span class="nav-text">认证与握手</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Jon</span>
+
+  
+  <script src="https://s22.cnzz.com/z_stat.php?id=1266098112&web_id=1266098112" language="JavaScript"></script>
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+  <span class="post-meta-divider">|</span>
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">NexT.Mist</a> v5.1.2</div>
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+
+
+  
+  
+
+  
+    <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+  
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+    <div id="lv-container" data-id="city" data-uid="MTAyMC8zMDcwMC83MjU1">
+<script type="text/javascript">
+   (function(d, s) {
+       var j, e = d.getElementsByTagName(s)[0];
+
+       if (typeof LivereTower === 'function') { return; }
+
+       j = d.createElement(s);
+       j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+       j.async = true;
+
+       e.parentNode.insertBefore(j, e);
+   })(document, 'script');
+</script>
+<noscript>Ϊ����ʹ�����������۹����뼤��JavaScript</noscript>
+</div>
+<!-- City�氲װ��������� -->
+  
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  
+  
+  <link rel="stylesheet" href="/lib/algolia-instant-search/instantsearch.min.css">
+
+  
+  
+  <script src="/lib/algolia-instant-search/instantsearch.min.js"></script>
+  
+
+  <script src="/js/src/algolia-search.js?v=5.1.2"></script>
+
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.4.js"></script>
+  <script>AV.initialize("yLPoVJgltlWhPaAI6t5JvbpB-gzGzoHsz", "E4XFKjXzrcUUGbELoAsyQ4Y2");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

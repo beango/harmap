@@ -1,0 +1,1130 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="javascript," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.2" />
+
+
+
+
+
+
+<meta name="description" content="完全理解关键字this">
+<meta name="keywords" content="javascript">
+<meta property="og:type" content="article">
+<meta property="og:title" content="完全理解关键字this">
+<meta property="og:url" content="http://www.harmap.com/2012/02/01/fully-understanding-the-this-keyword/index.html">
+<meta property="og:site_name" content="Harmap">
+<meta property="og:description" content="完全理解关键字this">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2017-08-21T03:13:33.073Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="完全理解关键字this">
+<meta name="twitter:description" content="完全理解关键字this">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.2',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: 'A2TJOVGMYM',
+      apiKey: '69da235de3e7b2b945e07a7c6f84696c',
+      indexName: 'harmapIndex',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://www.harmap.com/2012/02/01/fully-understanding-the-this-keyword/"/>
+
+
+
+
+
+  <title>完全理解关键字this | Harmap</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+    
+    <a href="https://github.com/beango"><img style="position: absolute; top: 0; left: 0; border: 0;" src="https://camo.githubusercontent.com/82b228a3648bf44fc1163ef44c62fcc60081495e/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f6c6566745f7265645f6161303030302e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_left_red_aa0000.png"></a>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Harmap</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  
+  <div class="algolia-popup popup search-popup">
+    <div class="algolia-search">
+      <div class="algolia-search-input-icon">
+        <i class="fa fa-search"></i>
+      </div>
+      <div class="algolia-search-input" id="algolia-search-input"></div>
+    </div>
+
+    <div class="algolia-results">
+      <div id="algolia-stats"></div>
+      <div id="algolia-hits"></div>
+      <div id="algolia-pagination" class="algolia-pagination"></div>
+    </div>
+
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+  </div>
+
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://www.harmap.com/2012/02/01/fully-understanding-the-this-keyword/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Jon">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Harmap">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">完全理解关键字this</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2012-02-01T00:00:00+08:00">
+                2012-02-01
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/default/" itemprop="url" rel="index">
+                    <span itemprop="name">default</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+             <span id="/2012/02/01/fully-understanding-the-this-keyword/" class="leancloud_visitors" data-flag-title="完全理解关键字this">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+              <div class="post-description">
+                  完全理解关键字this
+              </div>
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>今天的教程来自天才的<a href="http://codylindley.com/" target="_blank" rel="external">Cody Lindley</a>的新书：《JavaScript启蒙教程<a href="http://javascriptenlightenment.com/" target="_blank" rel="external">JavaScript Enlightenment</a>》。他讨论了令人迷惑的关键字this，以及确定和设置this的值的方法。</p>
+<p><strong>概念性的概述this</strong></p>
+<p>当一个函数创建后，一个关键字this就随之(在后台)创建，它链接到一个对象，而函数正是在这个对象中进行操作。换句话说，关键字this可在函数中使用，是对一个对象的引用，而函数正是该对象的属性或方法。</p>
+<p>让我们来看这个对象：</p>
+<pre><code>&lt;!DOCTYPE html&gt;&lt;html lang=&quot;en&quot;&gt;&lt;body&gt;&lt;script&gt;
+var cody = {
+  living:true,
+  age:23,
+  gender:&apos;male&apos;,
+  getGender:function(){return cody.gender;}
+};
+
+console.log(cody.getGender()); // logs &apos;male&apos;
+
+&lt;/script&gt;&lt;/body&gt;&lt;/html&gt;
+</code></pre><p>注意在函数getGender里，由于在cody对象内部，我们可以通过.来获取gender属性(也就是cody.gender)。也可以用this来获取cody对象，因为this正是指向cody对象。</p>
+<pre><code>&lt;!DOCTYPE html&gt;&lt;html lang=&quot;en&quot;&gt;&lt;body&gt;&lt;script&gt;
+var cody = {
+  living:true,
+  age:23,
+  gender:&apos;male&apos;,
+  getGender:function(){return this.gender;}
+};
+
+console.log(cody.getGender()); // logs &apos;male&apos;
+
+&lt;/script&gt;&lt;/body&gt;&lt;/html&gt;
+</code></pre><p>this.gender中this指向cody对象，而getGender函数可以操作cody对象。</p>
+<p>关于this的主题可能有点让人感到困惑，其实不必如此。仅记住，通常，this指向的对象正是包含函数的对象，而不是函数本身（当然也有例外，例如采用关键字new或者call()和apply()）。</p>
+<p><strong>重要提示</strong></p>
+<p><em>**</em>- 关键字this就像其他的变量，唯一不同就是你不能更改它。</p>
+<p>-<br>不同于传给函数的其他参数和变量，在调用函数的对象中，this是一个关键字(而不是属性)。</p>
+<p><strong>如何确定this的值？</strong></p>
+<p>this传递给所有的函数，它的值取决于函数运行时何时被调用。这里请注意，因为这是你需要记住的一个很特别的地方。</p>
+<p>下面的代码中myObject对象有个属性sayFoo，它指向函数sayFoo。当在全局域中调用sayFoo函数时，this指向window对象。当myObject调用函数时，this指向的是myObject。</p>
+<p>因为myObject有个叫foo的属性，在这里被使用。</p>
+<pre><code>&lt;!DOCTYPE html&gt;&lt;html lang=&quot;en&quot;&gt;&lt;body&gt;&lt;script&gt;
+
+var foo = &apos;foo&apos;;
+var myObject = {foo: &apos;I am myObject.foo&apos;};
+
+var sayFoo = function() {
+  console.log(this[&apos;foo&apos;]);
+};
+
+￼￼// give myObject a sayFoo property and have it point to sayFoo function
+myObject.sayFoo = sayFoo;
+myObject.sayFoo(); // logs &apos;I am myObject.foo&apos; 12
+
+sayFoo(); // logs &apos;foo&apos;
+
+&lt;/script&gt;&lt;/body&gt;&lt;/html&gt;
+</code></pre><p>很清楚，this的值取决于函数什么时候被调用。myObject.sayFoo和sayFoo都指向同样的函数，但sayFoo()调用的上下文不同，this的值也就不同。下面是类似的代码，head对象(window)显式使用，希望对你有用。</p>
+<pre><code>&lt;!DOCTYPE html&gt;&lt;html lang=&quot;en&quot;&gt;&lt;body&gt;&lt;script&gt;
+
+window.foo = &apos;foo&apos;;
+window.myObject = {foo: &apos;I am myObject.foo&apos;};
+window.sayFoo = function() { ! console.log(this.foo); };
+window.myObject.sayFoo = window.sayFoo;
+window.myObject.sayFoo();
+window.sayFoo();
+
+&lt;/script&gt;&lt;/body&gt;&lt;/html&gt;
+</code></pre><p>确保当你有多个引用指向同一个函数的时候，你清楚的知道this的值是随调用函数的上下文的不同而改变。</p>
+<p><strong>重要提示</strong></p>
+<p><em>**</em>- 除了this以外的所有变量和参数都属于静态变量范围(<a href="http://en.wikipedia.org/wiki/Lexical_scope#Lexical_scoping" target="_blank" rel="external">lexical<br>scope</a>)。</p>
+<p><strong>在嵌入函数内this指向head对象</strong></p>
+<p>你可能想知道在嵌入在另外一个函数的函数中使用this会发生什么事。不幸的是在ECMA 3中，this不遵循规律，它不指向函数属于的对象，而是指向head对象(<a href="http://blog.jobbole.com/12749/" title="浏览器" target="_blank" rel="external">浏览器</a>的window对象)。</p>
+<p>在下面的代码，func2和func3中的this不再指向myObject，而是head对象。</p>
+<pre><code>&lt;!DOCTYPE html&gt;&lt;html lang=&quot;en&quot;&gt;&lt;body&gt;&lt;script&gt;
+
+var myObject = {
+  func1:function() {
+     console.log(this); //logs myObject
+     varfunc2=function() {
+        console.log(this); //logs window, and will do so from this point on
+        varfunc3=function() {
+           console.log(this); //logs window, as it’s the head object
+        }();
+     }();
+  }
+};
+
+myObject.func1();
+
+&lt;/script&gt;&lt;/body&gt;&lt;/html&gt;
+</code></pre><p>然而在ECMAScript 5中，这个问题将会得到修正。现在，你应该意识到这个问题，尤其是当你将一个函数的值传递到另一个函数时。</p>
+<p>看看下面的代码，将一个匿名函数传给foo.func1，当在foo.func1中调用匿名函数(函数嵌套在另一个函数中)，匿名函数中this将会指向是head对象。</p>
+<pre><code>&lt;!DOCTYPE html&gt;&lt;html lang=&quot;en&quot;&gt;&lt;body&gt;&lt;script&gt;
+var foo = {
+  func1:function(bar){
+    bar(); //logs window, not foo
+    console.log(this);//the this keyword here will be a reference to foo object
+  }
+};
+
+foo.func1(function(){console.log(this)});
+&lt;/script&gt;&lt;/body&gt;&lt;/html&gt;
+</code></pre><p>现在你不会忘了，如果包含this的函数在另一个函数中，或者被另一个函数调用，this的值将会指向的是head对象(再说一次，这将在ECMAScript 5中被修正。)</p>
+<p><strong>解决嵌套函数的问题</strong></p>
+<p>为了使this的值不丢失，你可以在父函数中使用一个作用域链(scope chain)来保存对this进行引用。下面的代码中，使用一个叫that的变量，利用它的作用域，我们可以更好的保存函数上下文。</p>
+<pre><code>&lt;!DOCTYPE html&gt;&lt;html lang=&quot;en&quot;&gt;&lt;body&gt;&lt;script&gt;
+
+var myObject = {
+  myProperty:&apos;Icanseethelight&apos;,
+    myMethod:function() {
+   var that=this; //store a reference to this (i.e.myObject) in myMethod scope varhelperFunctionfunction(){//childfunction
+   var helperFunction function() { //childfunction
+      //logs &apos;I can see the light&apos; via scope chain because that=this
+           console.log(that.myProperty); //logs &apos;I can see the light&apos;
+           console.log(this); // logs window object, if we don&apos;t use &quot;that&quot;
+        }();
+    }
+}
+
+myObject.myMethod(); // invoke myMethod
+
+&lt;/script&gt;&lt;/body&gt;&lt;/html&gt;
+</code></pre><p><strong>控制this的值</strong></p>
+<p>this的值通常取决于调用函数的上下文(除非使用关键字new，稍后会为你介绍)，但是你可以用apply()或call()指定触发一个函数时this指向的对象，以改变/控制this的值。用这两种方法就好像再说：“嘿，调用X函数，但让Z对象来作this的值。”这样做，JavaScript默认的this的值将被更改。</p>
+<p>下面，我们创建了一个对象和一个函数，然后我们通过call()来触发函数，所以函数中的this指向的是myOjbect。在myFunction函数中的this会操作myObject而不是head对象，这样我们就改变了在myFunction中this指向的对象。</p>
+<pre><code>&lt;!DOCTYPE html&gt;&lt;html lang=&quot;en&quot;&gt;&lt;body&gt;&lt;script&gt;
+
+var myObject = {};
+
+var myFunction = function(param1, param2) {
+  //setviacall()&apos;this&apos;points to my Object when function is invoked
+  this.foo = param1;
+  this.bar = param2;
+  console.log(this); //logs Object{foo = &apos;foo&apos;, bar = &apos;bar&apos;}
+};
+
+myFunction.call(myObject, &apos;foo&apos;, &apos;bar&apos;); // invoke function, set this value to myObject
+
+console.log(myObject) // logs Object {foo = &apos;foo&apos;, bar = &apos;bar&apos;}
+
+&lt;/script&gt;&lt;/body&gt;&lt;/html&gt;
+</code></pre><p>在上面的例子，我们用了call()，apply()也可适用于同样用法，二者的不同之处在于参数如何传给函数。用call()，参数用逗号分开，而用apply()，参数放在一个数组中传递。下面是同样的代码，但是用apply()。</p>
+<pre><code>&lt;!DOCTYPE html&gt;&lt;html lang=&quot;en&quot;&gt;&lt;body&gt;&lt;script&gt;
+
+var myObject = {};
+
+var myFunction = function(param1, param2) {
+  //set via apply(), this points to my Object when function is invoked
+  this.foo=param1;
+  this.bar=param2;
+  console.log(this); // logs Object{foo=&apos;foo&apos;, bar=&apos;bar&apos;}
+};
+
+myFunction.apply(myObject, [&apos;foo&apos;, &apos;bar&apos;]); // invoke function, set this value
+console.log(myObject); // logs Object {foo = &apos;foo&apos;, bar = &apos;bar&apos;}
+
+&lt;/script&gt;&lt;/body&gt;&lt;/html&gt;
+</code></pre><p><strong>在自定义构造函数中用this</strong></p>
+<p>当函数用关键字new来触发，this的值–由于在构造函数中声明–指向实例本身。换种说法：在构造函数中，我们可以在对象真正创建之前，就用this来指定对象。这样看来，this值的更改和call()或apply()相似。</p>
+<p>下面，我们构造了一个构造函数Person，this指向创建的对象。当Person的对象创建后，this指向这个对象，并将属性name放在对象内，值为传给这个构造函数的参数值(name)。</p>
+<pre><code>&lt;!DOCTYPE html&gt;&lt;html lang=&quot;en&quot;&gt;&lt;body&gt;&lt;script&gt;
+
+var Person = function(name) {
+  this.name = name || &apos;johndoe&apos;; // this will refer to the instanc ecreated
+}
+
+var cody = new Person(&apos;Cody Lindley&apos;); // create an instance, based on Person constructor
+
+console.log(cody.name); // logs &apos;Cody Lindley&apos;
+
+&lt;/script&gt;&lt;/body&gt;&lt;/html&gt;
+</code></pre><p>这样，当用关键字new触发构造函数时，this指向“要创建的对象”。那么如果我们没有用关键字new，this的值将会指向触发Person的上下文——这时是head对象。让我们来看看下面的代码。</p>
+<pre><code>&lt;!DOCTYPE html&gt;&lt;html lang=&quot;en&quot;&gt;&lt;body&gt;&lt;script&gt;
+
+var Person = function(name) {
+  this.name=name||&apos;johndoe&apos;;
+}
+
+var cody = Person(&apos;Cody Lindley&apos;); // notice we did not use &apos;new&apos;
+console.log(cody.name); // undefined, the value is actually set at window.name
+console.log(window.name); // logs &apos;Cody Lindley&apos;
+
+&lt;/script&gt;&lt;/body&gt;&lt;/html&gt;
+</code></pre><p><strong>在prototype方法内的this指向构造实例</strong></p>
+<p>当一个方法作为一个构造函数的prototype属性时，这个方法中的this指向触发方法的实例。这里，我们有一个Person()的构造函数，它需要person的全名(full name)，为了获得全名(full name)，我们在Person.prototype中加入了一个whatIsMyFullName方法，所有的Person实例都继承该方法。这个方法中的this指向触发这个方法的实例(以及它的属性)。</p>
+<p>下面我创建了两个Person对象(cody和lisa)，继承的whatIsMyFullName方法包含的this就指向这个实例。</p>
+<pre><code>&lt;!DOCTYPE html&gt;&lt;html lang=&quot;en&quot;&gt;&lt;body&gt;&lt;script&gt;
+
+var Person = function(x){
+    if(x){this.fullName = x};
+};
+
+Person.prototype.whatIsMyFullName = function() {
+    return this.fullName; // &apos;this&apos; refers to the instance created from Person()
+}
+
+var cody = new Person(&apos;cody lindley&apos;);
+var lisa = new Person(&apos;lisa lindley&apos;);
+
+// call the inherited whatIsMyFullName method, which uses this to refer to the instance
+console.log(cody.whatIsMyFullName(), lisa.whatIsMyFullName());
+
+/* The prototype chain is still in effect, so if the instance does not have a
+fullName property, it will look for it in the prototype chain.
+Below, we add a fullName property to both the Person prototype and the Object
+prototype. See notes. */
+
+Object.prototype.fullName = &apos;John Doe&apos;;
+var john = new Person(); // no argument is passed so fullName is not added to instance
+console.log(john.whatIsMyFullName()); // logs &apos;John Doe&apos;
+
+&lt;/script&gt;&lt;/body&gt;&lt;/html&gt;
+</code></pre><p>在prototype对象内的方法里使用this，this就指向实例。如果实例不包含属性的话，prototype查找便开始了。</p>
+<p><strong>提示</strong></p>
+<p>-如果this指向的对象不包含想要查找的属性，那么这时对于任何属性都适用的法则在这里也适用，也就是，属性会沿着prototype链(prototype chain)上“寻找”。所以在我们的例子中，如果实例中不包含fullName属性，那么fullName就会查找Person.prototype.fullName，然后是Object.prototype.fullName。</p>
+<p>英文原文：<a href="http://net.tutsplus.com/tutorials/javascript-ajax/fully-understanding-the-this-keyword/?ref=vastwork" target="_blank" rel="external">Fully Understanding the this Keyword</a><br>编译：<a href="http://www.jobbole.com" target="_blank" rel="external">伯乐在线</a> - <a href="http://blog.jobbole.com/12203/" target="_blank" rel="external">唐小娟</a></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+    <div style="border: 1px solid black">
+        <div style="margin-left:10px">
+        <span style="font-weight:blod">版权声明</span>
+        <br>
+        <p style="font-size: 10px;line-height: 30px">
+	  <a href="/" style="color:#258FC6">Jon's blog</a> by <a href="/" style="color:#258FC6">Jon</a> is licensed under a <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/" style="color:#258FC6">Creative Commons BY-NC-ND 4.0 International License</a>.<br>
+	  由<a href="/" style="color:#258FC6">Jon</a>创作并维护的<a href="/" style="color:#258FC6">Jon's blog</a>博客采用<a href="https://creativecommons.org/licenses/by-nc-nd/4.0/" style="color:#258FC6">创作共用保留署名-非商业-禁止演绎4.0国际许可证</a>。<br>
+	  本文首发于<a href="/" style="color:#258FC6">Jon</a> 博客（ <a href="/" style="color:#258FC6">Jon</a> ），如若转载请注明出处，版权所有，侵权必究。<br>
+	  本文地址：<a href="/2012/02/01/fully-understanding-the-this-keyword/" title="完全理解关键字this">http://www.harmap.com/2012/02/01/fully-understanding-the-this-keyword/</a>
+        </p>
+        </div>
+    </div>
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/javascript/" rel="tag"># javascript</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2012/01/09/preg/" rel="next" title="正则大全">
+                <i class="fa fa-chevron-left"></i> 正则大全
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2012/02/09/How-browsers-work--Behind-the-scenes-of-modern-web-browsers/" rel="prev" title="前端必读：浏览器内部工作原理">
+                前端必读：浏览器内部工作原理 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div id="lv-container" data-id="city" data-uid="MTAyMC8zMDcwMC83MjU1"></div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+
+      <section class="site-overview sidebar-panel sidebar-panel-active">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.gif"
+               alt="Jon" />
+          <p class="site-author-name" itemprop="name">Jon</p>
+           
+              <p class="site-description motion-element" itemprop="description"></p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">140</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">10</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">78</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/beango" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                    
+                      GitHub
+                    
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Jon</span>
+
+  
+  <script src="https://s22.cnzz.com/z_stat.php?id=1266098112&web_id=1266098112" language="JavaScript"></script>
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+  <span class="post-meta-divider">|</span>
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">NexT.Mist</a> v5.1.2</div>
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+    <div id="lv-container" data-id="city" data-uid="MTAyMC8zMDcwMC83MjU1">
+<script type="text/javascript">
+   (function(d, s) {
+       var j, e = d.getElementsByTagName(s)[0];
+
+       if (typeof LivereTower === 'function') { return; }
+
+       j = d.createElement(s);
+       j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+       j.async = true;
+
+       e.parentNode.insertBefore(j, e);
+   })(document, 'script');
+</script>
+<noscript>Ϊ����ʹ�����������۹����뼤��JavaScript</noscript>
+</div>
+<!-- City�氲װ��������� -->
+  
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  
+  
+  <link rel="stylesheet" href="/lib/algolia-instant-search/instantsearch.min.css">
+
+  
+  
+  <script src="/lib/algolia-instant-search/instantsearch.min.js"></script>
+  
+
+  <script src="/js/src/algolia-search.js?v=5.1.2"></script>
+
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.4.js"></script>
+  <script>AV.initialize("yLPoVJgltlWhPaAI6t5JvbpB-gzGzoHsz", "E4XFKjXzrcUUGbELoAsyQ4Y2");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

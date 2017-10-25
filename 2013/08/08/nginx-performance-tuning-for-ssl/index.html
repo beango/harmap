@@ -1,0 +1,1048 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="ngnix," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.2" />
+
+
+
+
+
+
+<meta name="description" content="Nginx SSL性能调优">
+<meta name="keywords" content="ngnix">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Nginx SSL性能调优">
+<meta property="og:url" content="http://www.harmap.com/2013/08/08/nginx-performance-tuning-for-ssl/index.html">
+<meta property="og:site_name" content="Harmap">
+<meta property="og:description" content="Nginx SSL性能调优">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://www.harmap.com/post-images/2013-08/63918611gw1e7ayxtue5mj20rb0o5gog.jpg">
+<meta property="og:image" content="http://www.harmap.com/post-images/2013-08/63918611gw1e7azsiccppj20r40oqtbc.jpg">
+<meta property="og:image" content="http://www.harmap.com/post-images/2013-08/63918611gw1e7b06kcqxfj20rk0o50vg.jpg">
+<meta property="og:image" content="http://www.harmap.com/post-images/2013-08/63918611gw1e7b0b1e68dj20re0ordim.jpg">
+<meta property="og:image" content="http://www.harmap.com/post-images/2013-08/attempt10-300x263.png">
+<meta property="og:updated_time" content="2017-08-30T07:19:08.747Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Nginx SSL性能调优">
+<meta name="twitter:description" content="Nginx SSL性能调优">
+<meta name="twitter:image" content="http://www.harmap.com/post-images/2013-08/63918611gw1e7ayxtue5mj20rb0o5gog.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.2',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: 'A2TJOVGMYM',
+      apiKey: '69da235de3e7b2b945e07a7c6f84696c',
+      indexName: 'harmapIndex',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://www.harmap.com/2013/08/08/nginx-performance-tuning-for-ssl/"/>
+
+
+
+
+
+  <title>Nginx SSL性能调优 | Harmap</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+    
+    <a href="https://github.com/beango"><img style="position: absolute; top: 0; left: 0; border: 0;" src="https://camo.githubusercontent.com/82b228a3648bf44fc1163ef44c62fcc60081495e/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f6c6566745f7265645f6161303030302e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_left_red_aa0000.png"></a>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Harmap</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  
+  <div class="algolia-popup popup search-popup">
+    <div class="algolia-search">
+      <div class="algolia-search-input-icon">
+        <i class="fa fa-search"></i>
+      </div>
+      <div class="algolia-search-input" id="algolia-search-input"></div>
+    </div>
+
+    <div class="algolia-results">
+      <div id="algolia-stats"></div>
+      <div id="algolia-hits"></div>
+      <div id="algolia-pagination" class="algolia-pagination"></div>
+    </div>
+
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+  </div>
+
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://www.harmap.com/2013/08/08/nginx-performance-tuning-for-ssl/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Jon">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Harmap">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Nginx SSL性能调优</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2013-08-08T00:00:00+08:00">
+                2013-08-08
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/default/" itemprop="url" rel="index">
+                    <span itemprop="name">default</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+             <span id="/2013/08/08/nginx-performance-tuning-for-ssl/" class="leancloud_visitors" data-flag-title="Nginx SSL性能调优">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+              <div class="post-description">
+                  Nginx SSL性能调优
+              </div>
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p><strong>本文由 <a href="http://blog.jobbole.com" target="_blank" rel="external">伯乐在线</a> - <a href="http://blog.jobbole.com/author/%e8%b7%af%e5%a1%94%e7%9f%b3/" target="_blank" rel="external">路塔石</a><br>翻译自 <a href="http://techsamurais.com/?p=1384" target="_blank" rel="external">prashant</a>。转载请参见文章末尾处的要求。</strong></p>
+<p>这篇文章的目的是要谈谈我的 Nginx 调优经验，就不涉及数据库调优的内容了。</p>
+<h3 id="初始服务器设置"><a href="#初始服务器设置" class="headerlink" title="初始服务器设置"></a>初始服务器设置</h3><p>我的服务器运行在亚马逊 EC2 t1 micro 上，选择 Nginx + PHP5-fpm 作为后端，因为一些安全因素还打开了SSL。</p>
+<h3 id="性能测试"><a href="#性能测试" class="headerlink" title="性能测试"></a>性能测试</h3><p>我使用了Blitz.io 来进行压力测试。下面是我使用的命令：</p>
+<pre><code>-p 1-250:60 https://mydomian.com
+</code></pre><p>这是一个用户线性递增的测试，每个测试用户跑60秒。Blitz.io为每个请求每秒增加4个( = rise / run = 260 / 60)测试用户。</p>
+<h3 id="结论"><a href="#结论" class="headerlink" title="结论"></a>结论</h3><p>我把结论提前写在这里，如果你不想读完整篇文章也没有问题。</p>
+<p>​1. Nginx默认设置的DH算法（译注：Diffie-Hellman key exchange algorithm）是影响SSL性能的最大因素，因此采用如下设置能增加SSL性能：</p>
+<pre><code>ssl_protocols TLSv1 TLSv1.1 TLSv1.2;
+ssl_ciphers ECDHE-RSA-AES256-SHA384:AES256-SHA256:RC4:HIGH:!MD5:!aNULL:!eNULL:!NULL:!DH:!EDH:!AESGCM;
+ssl_prefer_server_ciphers on;
+ssl_session_cache shared:SSL:10m;
+ssl_session_timeout 10m;
+</code></pre><ol>
+<li>升级硬件 Upgrade your EC2 from t1.micro to c1.medium</li>
+<li>正确配置 Nginx的worker进程数量 Set Nginx to have 2 worker processes as a c1.medium gives you 2 CPUs</li>
+</ol>
+<h3 id="细节解释"><a href="#细节解释" class="headerlink" title="细节解释"></a>细节解释</h3><p>以下是我进行测试的详细过程。</p>
+<p><strong>尝试1：升级硬件</strong></p>
+<p>直觉告诉我，想解决性能问题的直接途径就是升级硬件，我把EC2实例从t1.micro升级到了为高流量而优化过的 c1.medium 升级后的测试结果：</p>
+<p><img src="/post-images/2013-08/63918611gw1e7ayxtue5mj20rb0o5gog.jpg" alt="Nginx SSL性能调优"></p>
+<p>巅峰时服务器的hits达到50/sec，压力增加时，time-out增加，hits减少。</p>
+<p><strong> 尝试2：测试CPU性能</strong></p>
+<p>我打开top然后重启了测试，注意到2个CPU的使用率不到13%，内存使用了300Mb，很明显硬件没有充分利用。所以我更改了nginx的设置 worker_processes 2;</p>
+<p><strong>尝试3，4，5：调整Nginx和PHP5-fpm</strong></p>
+<p>以下尝试得到的结果都和尝试1相同</p>
+<p>尝试3：</p>
+<p><strong>nginx.conf</strong></p>
+<pre><code>worker_processes 2;
+events {
+worker_connections 19000;
+multi_accept on;
+}
+...
+</code></pre><p>尝试4：</p>
+<p><strong>nginx.conf</strong></p>
+<pre><code>worker_processes 2;
+events {
+  worker_connections 19000;
+  multi_accept on;
+}
+http { 
+  gzip on;
+  gzip_disable &quot;msie6&quot;;
+
+  gzip_min_length  1000;
+  gzip_proxied     expired no-cache no-store private auth;
+  gzip_types       text/plain application/xml application/javascript text/css application/x-javascript;
+…
+}
+...
+</code></pre><p>尝试5：</p>
+<p>在尝试4未变的情况下我更改了php5-fpm的设置：</p>
+<pre><code>pm.max_children = 160
+pm.start_servers = 24
+pm.min_spare_servers = 20
+pm.max_spare_servers = 35
+pm.max_requests = 1500
+</code></pre><h3 id="尝试6-：在另一个服务器部署"><a href="#尝试6-：在另一个服务器部署" class="headerlink" title="尝试6**：在另一个服务器部署**"></a><strong>尝试6**</strong>：在另一个服务器部署**</h3><p>我有一个1.5GbRAM和8CPU的<a href="http://blog.jobbole.com/go/linode/" title="Linode" target="_blank" rel="external">Linode</a>服务器，采用刚才的设置，这是我的测试结果：</p>
+<p><img src="/post-images/2013-08/63918611gw1e7azsiccppj20r40oqtbc.jpg" alt="Nginx SSL性能调优"></p>
+<p><a href="http://blog.jobbole.com/go/linode/" title="Linode" target="_blank" rel="external">Linode</a>的服务器的结果棒极了！我的第一个直觉是难道Linode比EC2好吗。在我把我的服务迁移到Linode之前我想确保两者仅有的对性能有可能产生影响的不同被排除掉。</p>
+<p><strong>尝试7：大惊喜</strong></p>
+<p>我Google到Nginx在SSL上有些问题。Nginx默认使用DHE算法来产生密匙，改变这个设置应该能使它快一些。</p>
+<p>这里是我参考的一些文章：</p>
+<p><a href="http://matt.io/entry/ur" target="_blank" rel="external">http://matt.io/entry/ur</a></p>
+<p><a href="http://auxbuss.com/blog/posts/2011\_06\_28\_ssl\_session\_caching\_on\_nginx/" target="_blank" rel="external">http://auxbuss.com/blog/posts/2011\_06\_28\_ssl\_session\_caching\_on\_nginx/</a></p>
+<p>所以我更改了nginx.conf，删掉了kEDH算法</p>
+<pre><code>worker_processes 2;
+events {
+  worker_connections 1024;
+}
+http { 
+  gzip on;
+  gzip_disable &quot;msie6&quot;;
+
+  gzip_min_length  1000;
+  gzip_proxied     expired no-cache no-store private auth;
+  gzip_types       text/plain application/xml application/javascript text/css application/x-javascript;
+  ssl_ciphers ALL:!kEDH!ADH:RC4+RSA:+HIGH:+EXP; 
+…
+}
+...
+</code></pre><p>下图是测试结果：</p>
+<p><img src="/post-images/2013-08/63918611gw1e7b06kcqxfj20rk0o50vg.jpg" alt="Nginx SSL性能调优"></p>
+<p>效果很显著！</p>
+<p><strong>尝试8： 硬件提升是必要的吗</strong></p>
+<p>现在我的EC2和Linode表现差不多了。但是我真的需要升级到c1.medium实例才能实现这个性能的提升吗？或许不是这样……所以我把我改回了t1.micro。因为t1.micro实例只有一个CPU，所以我把worder_processes设置改回1。下面是测试的结果：</p>
+<p><img src="/post-images/2013-08/63918611gw1e7b0b1e68dj20re0ordim.jpg" alt="Nginx SSL性能调优"></p>
+<p>所以答案是肯定的，硬件上的提升是必要的。</p>
+<p><strong>尝试9：</strong></p>
+<p>有人在 Hacker News 上反馈说我的SSL密匙不能满足Perfect Forward Secrecy，我采用了他们的建议，对我的SSL设置做了如下更改：</p>
+<pre><code>ssl_protocols TLSv1 TLSv1.1 TLSv1.2;
+ssl_ciphers ECDHE-RSA-AES256-SHA384:AES256-SHA256:RC4:HIGH:!MD5:!aNULL:!eNULL:!NULL:!DH:!EDH:!AESGCM;
+ssl_prefer_server_ciphers on;
+ssl_session_cache shared:SSL:10m;
+ssl_session_timeout 10m;
+</code></pre><p>现在这个设置应该满足Perfect Forward Secrecy协议了。我重新跑了测试：</p>
+<p><img src="/post-images/2013-08/attempt10-300x263.png" alt="Nginx SSL性能调优"></p>
+<p>太棒了，性能也没有下降。很棒的学习经验！</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+    <div style="border: 1px solid black">
+        <div style="margin-left:10px">
+        <span style="font-weight:blod">版权声明</span>
+        <br>
+        <p style="font-size: 10px;line-height: 30px">
+	  <a href="/" style="color:#258FC6">Jon's blog</a> by <a href="/" style="color:#258FC6">Jon</a> is licensed under a <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/" style="color:#258FC6">Creative Commons BY-NC-ND 4.0 International License</a>.<br>
+	  由<a href="/" style="color:#258FC6">Jon</a>创作并维护的<a href="/" style="color:#258FC6">Jon's blog</a>博客采用<a href="https://creativecommons.org/licenses/by-nc-nd/4.0/" style="color:#258FC6">创作共用保留署名-非商业-禁止演绎4.0国际许可证</a>。<br>
+	  本文首发于<a href="/" style="color:#258FC6">Jon</a> 博客（ <a href="/" style="color:#258FC6">Jon</a> ），如若转载请注明出处，版权所有，侵权必究。<br>
+	  本文地址：<a href="/2013/08/08/nginx-performance-tuning-for-ssl/" title="Nginx SSL性能调优">http://www.harmap.com/2013/08/08/nginx-performance-tuning-for-ssl/</a>
+        </p>
+        </div>
+    </div>
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/ngnix/" rel="tag"># ngnix</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2013/08/08/java-lo-logbuffer/" rel="next" title="Java 日志缓存机制的实现">
+                <i class="fa fa-chevron-left"></i> Java 日志缓存机制的实现
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2013/08/16/unique-index-optimization-practice/" rel="prev" title="唯一性索引优化实践">
+                唯一性索引优化实践 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div id="lv-container" data-id="city" data-uid="MTAyMC8zMDcwMC83MjU1"></div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.gif"
+               alt="Jon" />
+          <p class="site-author-name" itemprop="name">Jon</p>
+           
+              <p class="site-description motion-element" itemprop="description"></p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">140</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">10</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">78</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/beango" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                    
+                      GitHub
+                    
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#初始服务器设置"><span class="nav-number">1.</span> <span class="nav-text">初始服务器设置</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#性能测试"><span class="nav-number">2.</span> <span class="nav-text">性能测试</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#结论"><span class="nav-number">3.</span> <span class="nav-text">结论</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#细节解释"><span class="nav-number">4.</span> <span class="nav-text">细节解释</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#尝试6-：在另一个服务器部署"><span class="nav-number">5.</span> <span class="nav-text">尝试6**：在另一个服务器部署**</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Jon</span>
+
+  
+  <script src="https://s22.cnzz.com/z_stat.php?id=1266098112&web_id=1266098112" language="JavaScript"></script>
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+  <span class="post-meta-divider">|</span>
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">NexT.Mist</a> v5.1.2</div>
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+    <div id="lv-container" data-id="city" data-uid="MTAyMC8zMDcwMC83MjU1">
+<script type="text/javascript">
+   (function(d, s) {
+       var j, e = d.getElementsByTagName(s)[0];
+
+       if (typeof LivereTower === 'function') { return; }
+
+       j = d.createElement(s);
+       j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+       j.async = true;
+
+       e.parentNode.insertBefore(j, e);
+   })(document, 'script');
+</script>
+<noscript>Ϊ����ʹ�����������۹����뼤��JavaScript</noscript>
+</div>
+<!-- City�氲װ��������� -->
+  
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  
+  
+  <link rel="stylesheet" href="/lib/algolia-instant-search/instantsearch.min.css">
+
+  
+  
+  <script src="/lib/algolia-instant-search/instantsearch.min.js"></script>
+  
+
+  <script src="/js/src/algolia-search.js?v=5.1.2"></script>
+
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.4.js"></script>
+  <script>AV.initialize("yLPoVJgltlWhPaAI6t5JvbpB-gzGzoHsz", "E4XFKjXzrcUUGbELoAsyQ4Y2");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

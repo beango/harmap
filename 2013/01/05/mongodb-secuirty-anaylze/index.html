@@ -1,0 +1,976 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="mongodb," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.2" />
+
+
+
+
+
+
+<meta name="description" content="Mongodb安全性初探">
+<meta name="keywords" content="mongodb">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Mongodb安全性初探">
+<meta property="og:url" content="http://www.harmap.com/2013/01/05/mongodb-secuirty-anaylze/index.html">
+<meta property="og:site_name" content="Harmap">
+<meta property="og:description" content="Mongodb安全性初探">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://www.harmap.com/post-images/2013-01/mongodb.png">
+<meta property="og:updated_time" content="2017-08-30T07:26:55.561Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Mongodb安全性初探">
+<meta name="twitter:description" content="Mongodb安全性初探">
+<meta name="twitter:image" content="http://www.harmap.com/post-images/2013-01/mongodb.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.2',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: 'A2TJOVGMYM',
+      apiKey: '69da235de3e7b2b945e07a7c6f84696c',
+      indexName: 'harmapIndex',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://www.harmap.com/2013/01/05/mongodb-secuirty-anaylze/"/>
+
+
+
+
+
+  <title>Mongodb安全性初探 | Harmap</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+    
+    <a href="https://github.com/beango"><img style="position: absolute; top: 0; left: 0; border: 0;" src="https://camo.githubusercontent.com/82b228a3648bf44fc1163ef44c62fcc60081495e/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f6c6566745f7265645f6161303030302e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_left_red_aa0000.png"></a>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Harmap</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  
+  <div class="algolia-popup popup search-popup">
+    <div class="algolia-search">
+      <div class="algolia-search-input-icon">
+        <i class="fa fa-search"></i>
+      </div>
+      <div class="algolia-search-input" id="algolia-search-input"></div>
+    </div>
+
+    <div class="algolia-results">
+      <div id="algolia-stats"></div>
+      <div id="algolia-hits"></div>
+      <div id="algolia-pagination" class="algolia-pagination"></div>
+    </div>
+
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+  </div>
+
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://www.harmap.com/2013/01/05/mongodb-secuirty-anaylze/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Jon">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Harmap">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Mongodb安全性初探</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2013-01-05T00:00:00+08:00">
+                2013-01-05
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/default/" itemprop="url" rel="index">
+                    <span itemprop="name">default</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+             <span id="/2013/01/05/mongodb-secuirty-anaylze/" class="leancloud_visitors" data-flag-title="Mongodb安全性初探">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+              <div class="post-description">
+                  Mongodb安全性初探
+              </div>
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>Mongodb，这么火的玩意其实早就想好好研究一下了。之前一直没空仔细学学新的东西，总是感觉精力不足。这次趁着买了一本书，就零零散散地在VPS上搭建、测试、看实现代码。感觉也蛮有意思的一个数据库。虽然感觉它非常简单，尤其是看代码的时候更是感觉如此。但这不也是另一个KISS的典范么，还是简单但是实用的东西最能流行。</p>
+<p>既然都看了其实现，也不能不产出点什么。正好多年没更新博文，就简单分析一下mongodb的安全性，凑个数先。</p>
+<h2 id="默认配置的安全情况"><a href="#默认配置的安全情况" class="headerlink" title="默认配置的安全情况"></a>默认配置的安全情况</h2><p>在默认情况下，mongod是监听在0.0.0.0之上的。而任何客户端都可以直接连接27017，且没有认证。好处是，开发人员或dba可以即时上手，不用担心被一堆配置弄的心烦意乱。坏处是，显而易见，如果你直接在公网服务器上如此搭建mongodb，那么所有人都可以直接访问并修改你的数据库数据了。</p>
+<p>默认情况下，mongod也是没有管理员账户的。因此除非你在admin数据库中使用db.addUser()命令添加了管理员帐号，且使用–auth参数启动mongod，否则在数据库中任何人都可以无需认证执行所有命令。包括delete和shutdown。</p>
+<p>此外，mongod还会默认监听28017端口，同样是绑定所有ip。这是<a href="http://www.mongodb.org/display/DOCS/Http+Interface" target="_blank" rel="external">一个mongod自带的web监控界面</a>。从中可以获取到数据库当前连接、log、状态、运行系统等信息。如果你开启了–rest参数，甚至可以直接通过web界面查询数据，执行mongod命令。</p>
+<p>我试着花了一个晚上扫描了国内一个B段，国外一个B段。结果是国外开了78个mongodb，而国内有60台。其中我随意挑选了10台尝试连接，而只有一台机器加了管理员账户做了认证，其他则全都是不设防的城市。可见其问题还是比较严重的。</p>
+<p>其实Mongodb本身有非常<a href="http://www.mongodb.org/display/DOCS/Security+and+Authentication" target="_blank" rel="external">详细的安全配置准则</a>，显然他也是想到了，然而他是将安全的任务推给用户去解决，这本身的策略就是偏向易用性的，对于安全性，则得靠边站了。</p>
+<h2 id="用户信息保存及认证过程"><a href="#用户信息保存及认证过程" class="headerlink" title="用户信息保存及认证过程"></a><strong>用户信息保存及认证过程</strong></h2><p><strong>
+</strong>类似MySQL将系统用户信息保存在mysql.user表。mongodb也将系统用户的username、pwd保存在admin.system.users集合中。其中<a href="https://github.com/mongodb/mongo/blob/r1.9.1/shell/db.js#L71" target="_blank" rel="external">pwd<br>= md5(username + “:mongo:” +<br>real_password)</a>。这本身并没有什么问题。username和:mongo:相当于对原密码加了一个salt值，即使攻击者获取了数据库中保存的md5<br>hash，也没法简单的从彩虹表中查出原始密码。</p>
+<p>我们再来看看mongodb对客户端的认证交互是如何实现的。mongo<br>client和server交互都是基于明文的，因此很容易被网络嗅探等方式抓取。这里我们使用数据库自带的<a href="http://www.mongodb.org/display/DOCS/mongosniff" target="_blank" rel="external">mongosniff</a>，可以直接dump出客户端和服务端的所有交互数据包：</p>
+<p>```perl<br>[root@localhost bin]# ./mongosniff –source NET lo<br>sniffing 27017 </p>
+<p> // 省略开头的数据包，直接看看认证流程。以下就是当用户输入db.auth(username, real_passwd)后发生的交互。</p>
+<p>127.0.0.1:34142  –&gt;&gt; 127.0.0.1:27017 admin.$cmd  62 bytes  id:8        8<br>        query: { getnonce: 1.0 }  ntoreturn: -1 ntoskip: 0<br>127.0.0.1:27017  &lt;&lt;–  127.0.0.1:34142   81 bytes  id:7 7 - 8<br>        reply n:1 cursorId: 0<br>        { nonce: “df97182fb47bd6d0”, ok: 1.0 }<br>127.0.0.1:34142  –&gt;&gt; 127.0.0.1:27017 admin.$cmd  152 bytes  id:9       9<br>        query: { authenticate: 1.0, user: “admin”, nonce: “df97182fb47bd6d0”, key: “3d839522b547931057284b6e1cd3a567” }  ntoreturn: -1 ntoskip: 0<br>127.0.0.1:27017  &lt;&lt;–  127.0.0.1:34142   53 bytes  id:8 8 - 9<br>        reply n:1 cursorId: 0<br>        { ok: 1.0 }<br>```perl</p>
+<ol>
+<li><strong>第一步，client向server发送一个命令getnonce，向server申请一个随机值nonce。</strong></li>
+<li><strong>server返回一个16位的nonce。这里每次返回的值都不相同。</strong></li>
+<li><strong>第二步，client将用户输入的明文密码通过算法生成一个key，即 <a href="https://github.com/mongodb/mongo/blob/r1.9.1/shell/db.js#L90" target="_blank" rel="external">key = md5(nonce + username + md5(username + “:mongo:” + real_passwd))</a>，并将之连同用户名、nonce一起返回给server</strong></li>
+<li><strong>server收到数据，首先比对nonce是否为上次生成的nonce，然后比对key == md5(nonce + username + pwd)。如果相同，则<a href="https://github.com/mongodb/mongo/blob/r1.9.1/db/security_commands.cpp#L71" target="_blank" rel="external">验证通过</a>。</strong></li>
+</ol>
+<p>由于至始至终没有密码hash在网络上传输，而是使用了类似挑战的机制，且每一次nonce的值都不同，因此即使攻击者截取到key的值，也没用办法通过重放攻击通过认证。</p>
+<p>然而当攻击者获取了数据库中保存的pwd<br>hash，则认证机制就不会起到作用了。即使攻击者没有破解出pwd<br>hash对应的密码原文。但是仍然可以通过发送md5(nonce + username +<br>pwd)的方式直接通过server认证。这里实际上server是将用户的pwd<br>hash当作了真正的密码去验证，并没有基于原文密码验证。在这点上和我之前分析的<a href="http://www.phpweblog.net/GaRY/archive/2010/08/20/mysql_client_to_server_auth_method.html" target="_blank" rel="external">mysql的认证机制</a>其实没什么本质区别。当然或许这个也不算是认证机制的弱点，但是毕竟要获取mongodb的username和pwd的可能性会更大一些。</p>
+<p><img src="/post-images/2013-01/mongodb.png" alt=""></p>
+<p>然而在Web的监控界面的认证中则有一些不同。当client来源不是localhost，这里的用户认证过程是基于HTTP<br>401的。其过程与mongo认证大同小异。但是一个主要区别是：这里的nonce并没有随机化，而是<a href="https://github.com/mongodb/mongo/blob/r1.9.2/db/dbwebserver.cpp#L130" target="_blank" rel="external">每次都是默认为”abc”</a>。</p>
+<p>利用这个特点，如果攻击者抓取了管理员一次成功的登录，那么他就可以重放这个数据包，直接进入Web监控页面。</p>
+<p>同样，攻击者还可以通过此接口直接暴力破解mongo的用户名密码。实际上27017和28017都没有对密码猜解做限制，但Web由于无需每次获取nonce，因此将会更为简便。</p>
+<h2 id="JavaScript的执行与保护"><a href="#JavaScript的执行与保护" class="headerlink" title="JavaScript的执行与保护"></a>JavaScript的执行与保护</h2><p>Mongodb本身最大的特点之一，就是他是使用javascript语言作为命令驱动的。黑客会比较关注这一点，因为其命令的支持程度，就是获取mongodb权限之后是否能进一步渗透的关键。</p>
+<p>Javascript本身的标准库其实相当弱。无论是spidermonkey或者是v8引擎，其实都没有系统操作、文件操作相关的支持。对此，<a href="https://github.com/mongodb/mongo/blob/r1.9.1/shell/shell_utils.cpp#L890" target="_blank" rel="external">mongodb做了一定的扩展</a>。可以看到，ls/cat/cd/hostname甚至runProgram都已经在Javascript的上下文中有实现。看到这里是不是已经迫不及待了？mongo<br>shell中试一下输入ls(“./“)，看看返回。</p>
+<p>等等？结果怎么这么熟悉？哈哈，没错，其实这些api都是在client的上下文中实现的。一个小小玩笑:)</p>
+<p>那么在server端是否可以执行js呢？答案是肯定的。利用db.eval(code)——实际上底层执行的是db.$cmd.findOne({$eval:<br>code})——可以在server端执行我们的js代码。</p>
+<p>当然在<a href="https://github.com/mongodb/mongo/blob/r1.9.2/scripting/utils.cpp#L67" target="_blank" rel="external">server端也有js的上下文扩展</a>。显然mongod考虑到了安全问题（也可能是其他原因），因此在这里并没有提供client中这么强大的功能。当然mongodb还在不断更新，长期关注这个list，说不定以后就有类似load_file/exec之类的实现。</p>
+<p>一劳永逸解决服务端js执行带来的问题可以使用<a href="http://www.mongodb.org/display/DOCS/Command+Line+Parameters" target="_blank" rel="external">noscripting</a>参数。直接禁止server-side的js代码执行功能。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+    <div style="border: 1px solid black">
+        <div style="margin-left:10px">
+        <span style="font-weight:blod">版权声明</span>
+        <br>
+        <p style="font-size: 10px;line-height: 30px">
+	  <a href="/" style="color:#258FC6">Jon's blog</a> by <a href="/" style="color:#258FC6">Jon</a> is licensed under a <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/" style="color:#258FC6">Creative Commons BY-NC-ND 4.0 International License</a>.<br>
+	  由<a href="/" style="color:#258FC6">Jon</a>创作并维护的<a href="/" style="color:#258FC6">Jon's blog</a>博客采用<a href="https://creativecommons.org/licenses/by-nc-nd/4.0/" style="color:#258FC6">创作共用保留署名-非商业-禁止演绎4.0国际许可证</a>。<br>
+	  本文首发于<a href="/" style="color:#258FC6">Jon</a> 博客（ <a href="/" style="color:#258FC6">Jon</a> ），如若转载请注明出处，版权所有，侵权必究。<br>
+	  本文地址：<a href="/2013/01/05/mongodb-secuirty-anaylze/" title="Mongodb安全性初探">http://www.harmap.com/2013/01/05/mongodb-secuirty-anaylze/</a>
+        </p>
+        </div>
+    </div>
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/mongodb/" rel="tag"># mongodb</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2012/12/25/dot-net-gc-2/" rel="next" title=".Net垃圾回收机制原理（二）">
+                <i class="fa fa-chevron-left"></i> .Net垃圾回收机制原理（二）
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2013/01/09/interesting-solution-http-status-code/" rel="prev" title="趣解HTTP状态码">
+                趣解HTTP状态码 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div id="lv-container" data-id="city" data-uid="MTAyMC8zMDcwMC83MjU1"></div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.gif"
+               alt="Jon" />
+          <p class="site-author-name" itemprop="name">Jon</p>
+           
+              <p class="site-description motion-element" itemprop="description"></p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">140</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">10</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">78</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/beango" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                    
+                      GitHub
+                    
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#默认配置的安全情况"><span class="nav-number">1.</span> <span class="nav-text">默认配置的安全情况</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#用户信息保存及认证过程"><span class="nav-number">2.</span> <span class="nav-text">用户信息保存及认证过程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#JavaScript的执行与保护"><span class="nav-number">3.</span> <span class="nav-text">JavaScript的执行与保护</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Jon</span>
+
+  
+  <script src="https://s22.cnzz.com/z_stat.php?id=1266098112&web_id=1266098112" language="JavaScript"></script>
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+  <span class="post-meta-divider">|</span>
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">NexT.Mist</a> v5.1.2</div>
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+    <div id="lv-container" data-id="city" data-uid="MTAyMC8zMDcwMC83MjU1">
+<script type="text/javascript">
+   (function(d, s) {
+       var j, e = d.getElementsByTagName(s)[0];
+
+       if (typeof LivereTower === 'function') { return; }
+
+       j = d.createElement(s);
+       j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+       j.async = true;
+
+       e.parentNode.insertBefore(j, e);
+   })(document, 'script');
+</script>
+<noscript>Ϊ����ʹ�����������۹����뼤��JavaScript</noscript>
+</div>
+<!-- City�氲װ��������� -->
+  
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  
+  
+  <link rel="stylesheet" href="/lib/algolia-instant-search/instantsearch.min.css">
+
+  
+  
+  <script src="/lib/algolia-instant-search/instantsearch.min.js"></script>
+  
+
+  <script src="/js/src/algolia-search.js?v=5.1.2"></script>
+
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.4.js"></script>
+  <script>AV.initialize("yLPoVJgltlWhPaAI6t5JvbpB-gzGzoHsz", "E4XFKjXzrcUUGbELoAsyQ4Y2");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

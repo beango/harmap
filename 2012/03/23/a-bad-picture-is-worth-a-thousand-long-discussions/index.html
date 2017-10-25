@@ -1,0 +1,948 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="windows8," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.2" />
+
+
+
+
+
+
+<meta name="description" content="一张破图胜过长篇大论（译文：关于Windows 8的新编程体系）">
+<meta name="keywords" content="windows8">
+<meta property="og:type" content="article">
+<meta property="og:title" content="一张破图胜过长篇大论（译文：关于Windows 8的新编程体系）">
+<meta property="og:url" content="http://www.harmap.com/2012/03/23/a-bad-picture-is-worth-a-thousand-long-discussions/index.html">
+<meta property="og:site_name" content="Harmap">
+<meta property="og:description" content="一张破图胜过长篇大论（译文：关于Windows 8的新编程体系）">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://www.harmap.com/post-images/2012-03/2012032322562391.jpg">
+<meta property="og:image" content="http://www.harmap.com/post-images/2012-03/2012032323015116.jpg">
+<meta property="og:updated_time" content="2017-08-30T07:18:13.702Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="一张破图胜过长篇大论（译文：关于Windows 8的新编程体系）">
+<meta name="twitter:description" content="一张破图胜过长篇大论（译文：关于Windows 8的新编程体系）">
+<meta name="twitter:image" content="http://www.harmap.com/post-images/2012-03/2012032322562391.jpg">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.2',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: 'A2TJOVGMYM',
+      apiKey: '69da235de3e7b2b945e07a7c6f84696c',
+      indexName: 'harmapIndex',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://www.harmap.com/2012/03/23/a-bad-picture-is-worth-a-thousand-long-discussions/"/>
+
+
+
+
+
+  <title>一张破图胜过长篇大论（译文：关于Windows 8的新编程体系） | Harmap</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+    
+    <a href="https://github.com/beango"><img style="position: absolute; top: 0; left: 0; border: 0;" src="https://camo.githubusercontent.com/82b228a3648bf44fc1163ef44c62fcc60081495e/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f6c6566745f7265645f6161303030302e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_left_red_aa0000.png"></a>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Harmap</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  
+  <div class="algolia-popup popup search-popup">
+    <div class="algolia-search">
+      <div class="algolia-search-input-icon">
+        <i class="fa fa-search"></i>
+      </div>
+      <div class="algolia-search-input" id="algolia-search-input"></div>
+    </div>
+
+    <div class="algolia-results">
+      <div id="algolia-stats"></div>
+      <div id="algolia-hits"></div>
+      <div id="algolia-pagination" class="algolia-pagination"></div>
+    </div>
+
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+  </div>
+
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://www.harmap.com/2012/03/23/a-bad-picture-is-worth-a-thousand-long-discussions/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Jon">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Harmap">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">一张破图胜过长篇大论（译文：关于Windows 8的新编程体系）</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2012-03-23T00:00:00+08:00">
+                2012-03-23
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/default/" itemprop="url" rel="index">
+                    <span itemprop="name">default</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+             <span id="/2012/03/23/a-bad-picture-is-worth-a-thousand-long-discussions/" class="leancloud_visitors" data-flag-title="一张破图胜过长篇大论（译文：关于Windows 8的新编程体系）">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+              <div class="post-description">
+                  一张破图胜过长篇大论（译文：关于Windows 8的新编程体系）
+              </div>
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>　　译者：linger(sysu大三 )</p>
+<p>　　注：本文是DOUG SEVEN写的关于Windows 8新的编程体系的一篇文章《<a href="http://dougseven.com/2011/09/15/a-bad-picture-is-worth-a-thousand-long-discussions/" target="_blank" rel="external">A bad<br>picture is worth a thousand<br>long discussions</a>》的译文。</p>
+<p>　　在Build会议中，我跟顾客，还有其他的参与者，Microsoft的mvp，Microsoft的地方主管，Microsoft的工程团队成员谈了很多。其中谈的最多的是，Windows<br>8的平台和工具的技术盒子图。如下所示：</p>
+<p><img src="/post-images/2012-03/2012032322562391.jpg" alt=""></p>
+<p>　　现在我告诉你，我曾画过很多这种软件架构图，当然并不是很容易画出来的。这种图从技术的角度来说永不可能是精确的。显然没有一种简单的方式对这种复杂的系统来画一张技术上精确无误的框架图。结果是，你的框架图是会漏掉很多盒子的（漏掉很多在整个体系中实际存在的技术）。不幸的是，那正是这里所发生的事（Windows<br>8的技术盒子漏掉了一些实际存在的技术）。</p>
+<p>　　谈话中其中之一的话题是围绕着技术盒子中绿色部分（即是Metro风格的应用程序）为何没有出现.NET和CLR。是不是在Metro风格的应用程序中，VB，C#在编译和运行过程都不兼容WinRT？这意味着.NET框架的终结么？</p>
+<p>　　还有一些研究过二进制码的质疑是否有两个CLR。Windows 8究竟在搞什么呢？</p>
+<p>　　昨晚我跟.NET<br>CLR的团队的成员们交流过（这里不说出他们的名，不过请相信我，他们肯定明确知道这个体系是如何运行的），下面是一些内部消息。</p>
+<p>　　<strong>基本事实：</strong></p>
+<p>　　只有一个CLR。每个应用程序或者应用程序池围绕着一个进程旋转，而CLR就是在该进程内部工作的。这意味着，同时运行的一个Metro风格的应用程序和一个桌面模式的应用程序用的是相同的CLR二进制码，只不过是CLR的两个不同的实例。</p>
+<p>　　.NET4.5在桌面模式的应用程序和Metro风格的应用程序都可以用到。不过有点不同。Metro风格的应用程序使用的是最适合称之为另一个.NET的Profile<br>（比如说桌面模式的应用程序使用的是.NET Client的Profile<br>，而Metro风格的应用程序使用的是.NET<br>Metro的Profile）。事实上并不是不相同，但在Metro风格的应用程序中.NET的实现像是另一个Profile一样。</p>
+<p>　　不管一个桌面模式的应用程序或者Metro风格的应用程序是不是.NET的app,<br>但都是编译成相同的MSIL（微软中间语言代码）。并不存在一个特殊的Windows<br>8的Metro的中间语言代码（就像CLR那样，只有一个MSIL）。</p>
+<p>　　下面是一张更准确的图（当然还是技术上不是精确的框架图）</p>
+<p> <img src="/post-images/2012-03/2012032323015116.jpg" alt=""></p>
+<p>　　在这张图中，你可以看到CLR和.NET4.5都用到了用C#和VB写的桌面模式的app(蓝色部分)和Metro风格的app（绿色部分）。Silverlight仍然只能在桌面模式作为IE的插件运用到（当然，离开浏览器，它在桌面模式下还是支持的）。这幅图中另一个新添加的是DirectX，原来第一张图是完全没有存在的。DirectX在高级app中是一种很重要的技术，比如游戏。DirectX使得C++可以访问控制GPU。</p>
+<p>　　最大的疑惑，正如我所提到的，是跨越了了蓝色部分和绿色部分的.NET的使用。为什么会存在.NET<br>Metro<br>Profile（我起的名）呢？因为Metro风格的app运行在一个特殊app的容器中，该容器限制了应用程序的访问权限，从而保护了终端用户，防止受到恶意程序的攻击。就本身而论，Metro<br>Profile其实是.NET Client<br>Profile的一个子集，只不过是去掉了一些app容器中对于Metro风格程序不允许的权限。开发者如果习惯了.NET的话，会发现很容易使用WinRT，就像是这样子的，有一些引用的集合，然后去使用那些集合中的成员。</p>
+<p>　　Additionally, some of the changes in the Metro Profile are to ensure<br>Metro style apps are constructed in the preferred way for touch-first<br>design and portable form factors.<br>（该句不知该怎么翻译）比如File.Create()。以前如果你使用.NET来创建一个新文件的话，你会使用File.Create(string<br>fileLocation) 在磁盘上创建一个新文件，然后使用一个stream<br>reader来创建以字符串形式存在的文本的内容。这是一个同步操作（你调用了该函数，进程就阻塞在那里，直到函数返回）。而如今的Metro风格的app的理念是，应该利用异步的编程来减少比如IO延迟之类的东西，比如上面提到的文件系统的操作。这意味着，.NET<br>Metro<br>Profile提供给你的不是同步操作FileCreate()。不过，你仍然可以调用File.Create()（或者是File.CreateNew()我也想不起来函数名），不过是异步操作。一旦回调函数被使用，你仍然可以打开一个stream<br>reader然后对文件的内容视作一个字符串来处理，就像你所做的那样。</p>
+<p>　　最后，所有这些意味着，你会有一些选择，但你不会因此牺牲多少。你仍然可以建立.NET和Silverlight的app，正如你所习惯的那样，当然他们还可以在Windows上跑很多年。如果你想建立一个Metro风格的app，你有四种选择：</p>
+<p>1.Xaml和.NET(C#或者VB)。你不会放弃很多.NET的东西（记住，你只是抛弃那些在app容器中所禁止的那些），你还可以使用WinRT来访问传感输入和其他的系统资源。</p>
+<p>2.Xaml和C++。你可以使用你在Xaml和C++的技能来使用WinRT。当然你就感觉不到了.NET的好处，不过，有些人喜欢管理自己程序的垃圾回收。</p>
+<p>3.Html和Javascript。你可以利用你在UI方面的能力，在Javascript中调用WinRT来访问系统资源和传感输入。</p>
+<p>4.DirectX和C++。如果你在开发一个刺激好玩的游戏，你可以利用DirectX和通过C++跟WinRT来访问设备传感器和系统资源。</p>
+<p>以上是译文，若那些译的不好，敬请指正。下面在提供一些关于Windows 8的编程链接：</p>
+<p><a href="http://blogs.microsoft.co.il/blogs/sasha/archive/2011/09/15/winrt-and-%20%20net-in-windows-8.aspx" target="_blank" rel="external">WinRT and .NET in Windows 8</a></p>
+<p><a href="http://ardalis.com/Analyzing-Windows-8-and-WinRT" target="_blank" rel="external">Analyzing Windows 8 and WinRT</a></p>
+<p><a href="http://dougseven.com/2011/09/15/a-bad-picture-is-worth-a-thousand-long-discussions/" target="_blank" rel="external">A bad picture is worth a thousand long discussions</a></p>
+<p><a href="http://stackoverflow.com/questions/7457371/why-is-winrt-unmanaged" target="_blank" rel="external">Why is WinRT unmanaged?</a></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+    <div style="border: 1px solid black">
+        <div style="margin-left:10px">
+        <span style="font-weight:blod">版权声明</span>
+        <br>
+        <p style="font-size: 10px;line-height: 30px">
+	  <a href="/" style="color:#258FC6">Jon's blog</a> by <a href="/" style="color:#258FC6">Jon</a> is licensed under a <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/" style="color:#258FC6">Creative Commons BY-NC-ND 4.0 International License</a>.<br>
+	  由<a href="/" style="color:#258FC6">Jon</a>创作并维护的<a href="/" style="color:#258FC6">Jon's blog</a>博客采用<a href="https://creativecommons.org/licenses/by-nc-nd/4.0/" style="color:#258FC6">创作共用保留署名-非商业-禁止演绎4.0国际许可证</a>。<br>
+	  本文首发于<a href="/" style="color:#258FC6">Jon</a> 博客（ <a href="/" style="color:#258FC6">Jon</a> ），如若转载请注明出处，版权所有，侵权必究。<br>
+	  本文地址：<a href="/2012/03/23/a-bad-picture-is-worth-a-thousand-long-discussions/" title="一张破图胜过长篇大论（译文：关于Windows 8的新编程体系）">http://www.harmap.com/2012/03/23/a-bad-picture-is-worth-a-thousand-long-discussions/</a>
+        </p>
+        </div>
+    </div>
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/windows8/" rel="tag"># windows8</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2012/03/12/is-memcached-a-dinosaur-in-comparison-to-redis/" rel="next" title="Memcached真的过时了吗？">
+                <i class="fa fa-chevron-left"></i> Memcached真的过时了吗？
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2012/03/29/mongodb-best-practices/" rel="prev" title="MongoDB最佳实践">
+                MongoDB最佳实践 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div id="lv-container" data-id="city" data-uid="MTAyMC8zMDcwMC83MjU1"></div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+
+      <section class="site-overview sidebar-panel sidebar-panel-active">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.gif"
+               alt="Jon" />
+          <p class="site-author-name" itemprop="name">Jon</p>
+           
+              <p class="site-description motion-element" itemprop="description"></p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">140</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">10</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">78</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/beango" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                    
+                      GitHub
+                    
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Jon</span>
+
+  
+  <script src="https://s22.cnzz.com/z_stat.php?id=1266098112&web_id=1266098112" language="JavaScript"></script>
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+  <span class="post-meta-divider">|</span>
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">NexT.Mist</a> v5.1.2</div>
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+    <div id="lv-container" data-id="city" data-uid="MTAyMC8zMDcwMC83MjU1">
+<script type="text/javascript">
+   (function(d, s) {
+       var j, e = d.getElementsByTagName(s)[0];
+
+       if (typeof LivereTower === 'function') { return; }
+
+       j = d.createElement(s);
+       j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+       j.async = true;
+
+       e.parentNode.insertBefore(j, e);
+   })(document, 'script');
+</script>
+<noscript>Ϊ����ʹ�����������۹����뼤��JavaScript</noscript>
+</div>
+<!-- City�氲װ��������� -->
+  
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  
+  
+  <link rel="stylesheet" href="/lib/algolia-instant-search/instantsearch.min.css">
+
+  
+  
+  <script src="/lib/algolia-instant-search/instantsearch.min.js"></script>
+  
+
+  <script src="/js/src/algolia-search.js?v=5.1.2"></script>
+
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.4.js"></script>
+  <script>AV.initialize("yLPoVJgltlWhPaAI6t5JvbpB-gzGzoHsz", "E4XFKjXzrcUUGbELoAsyQ4Y2");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

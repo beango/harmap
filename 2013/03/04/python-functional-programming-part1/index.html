@@ -1,0 +1,1087 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next mist use-motion" lang="zh-Hans">
+<head>
+  <meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css" />
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css" />
+
+<link href="/css/main.css?v=5.1.2" rel="stylesheet" type="text/css" />
+
+
+  <meta name="keywords" content="python," />
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.2" />
+
+
+
+
+
+
+<meta name="description" content="Python中函数式编程，第一部分">
+<meta name="keywords" content="python">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Python中函数式编程，第一部分">
+<meta property="og:url" content="http://www.harmap.com/2013/03/04/python-functional-programming-part1/index.html">
+<meta property="og:site_name" content="Harmap">
+<meta property="og:description" content="Python中函数式编程，第一部分">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2017-08-21T03:13:33.119Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Python中函数式编程，第一部分">
+<meta name="twitter:description" content="Python中函数式编程，第一部分">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Mist',
+    version: '5.1.2',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: 'A2TJOVGMYM',
+      apiKey: '69da235de3e7b2b945e07a7c6f84696c',
+      indexName: 'harmapIndex',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://www.harmap.com/2013/03/04/python-functional-programming-part1/"/>
+
+
+
+
+
+  <title>Python中函数式编程，第一部分 | Harmap</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+    
+    <a href="https://github.com/beango"><img style="position: absolute; top: 0; left: 0; border: 0;" src="https://camo.githubusercontent.com/82b228a3648bf44fc1163ef44c62fcc60081495e/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f6c6566745f7265645f6161303030302e706e67" alt="Fork me on GitHub" data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_left_red_aa0000.png"></a>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/"  class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Harmap</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle"></p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br />
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br />
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br />
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br />
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br />
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  
+  <div class="algolia-popup popup search-popup">
+    <div class="algolia-search">
+      <div class="algolia-search-input-icon">
+        <i class="fa fa-search"></i>
+      </div>
+      <div class="algolia-search-input" id="algolia-search-input"></div>
+    </div>
+
+    <div class="algolia-results">
+      <div id="algolia-stats"></div>
+      <div id="algolia-hits"></div>
+      <div id="algolia-pagination" class="algolia-pagination"></div>
+    </div>
+
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+  </div>
+
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://www.harmap.com/2013/03/04/python-functional-programming-part1/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Jon">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Harmap">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Python中函数式编程，第一部分</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2013-03-04T00:00:00+08:00">
+                2013-03-04
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category" >
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/default/" itemprop="url" rel="index">
+                    <span itemprop="name">default</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+             <span id="/2013/03/04/python-functional-programming-part1/" class="leancloud_visitors" data-flag-title="Python中函数式编程，第一部分">
+               <span class="post-meta-divider">|</span>
+               <span class="post-meta-item-icon">
+                 <i class="fa fa-eye"></i>
+               </span>
+               
+                 <span class="post-meta-item-text">阅读次数&#58;</span>
+               
+                 <span class="leancloud-visitors-count"></span>
+             </span>
+          
+
+          
+
+          
+
+          
+              <div class="post-description">
+                  Python中函数式编程，第一部分
+              </div>
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>英文原文：<a href="http://www.ibm.com/developerworks/linux/library/l-prog/index.html" target="_blank" rel="external">Charming Python: Functional programming in Python, Part 1</a>，翻译：<a href="http://www.oschina.net/translate/python-functional-programming-part1" target="_blank" rel="external">开源中国</a></p>
+<p><strong>摘要</strong>：虽然人们总把Python当作过程化的，面向对象的语言，但是他实际上包含了函数化编程中，你需要的任何东西。这篇文章主要讨论函数化编程的一般概念，并说明用Python来函数化编程的技术。</p>
+<p>我们最好从艰难的问题开始出发：“到底什么是函数化编程呢？”其中一个答案可能是这样的，函数化编程就是你在使用Lisp这样的语言时所做的（还有Scheme，Haskell，ML，OCAML，Mercury，Erlang和其他一些语言）。这是一个保险的回答，但是它解释得并不清晰。不幸的是对于什么是函数化编程，很难能有一个协调一致的定义，即使是从函数化变成本身出发，也很难说明。这点倒很像盲人摸象。不过，把它拿来和命令式编程（imperative programming）做比较也不错（命令式编程就像你在用C，Pascal，C++，Java，Perl，Awk，TCL和很多其他类似语言时所做的，至少大部分一样 ）。</p>
+<p>让我们回想一下功能模块的绑定类。使用该类的特性，我们可以确认在一个给定的范围块内，一个特定的名字仅仅代表了一个唯一的事物。</p>
+<p>我个人粗略总结了一下，认为函数式编程至少应该具有下列几点中的多个特点。在谓之为函数式的语言中，要做到这些就比较容易，但要做到其它一些事情不是很难就是完全不可能：</p>
+<ul>
+<li>函数具有首要地位(对象)。也就是说，能对“数据”做什么事，就要能对函数本身做到那些事（比如将函数作为参数传递给另外一个函数）。</li>
+<li>将递归作为主要的控制结构。在有些函数式语言中，都不存在其它的“循环”结构。</li>
+<li>列表处理作为一个重点（例如，Lisp语言的名字）。列表往往是通过对子列表进行递归取代了循环。</li>
+<li>“纯”函数式语言会完全避免副作用。这么做就完全弃绝了命令式语言中几乎无处不在的这种做法：将第一个值赋给一个变量之后为了跟踪程序的运行状态，接着又将另外一个值赋给同一个变量。</li>
+<li>函数式编程不是不鼓励就是完全禁止使用<em>语句</em>，而是通过对表达式(换句话说，就是函数加上参数）求值（evaluation of expressions）完成任务.<br>在最纯粹的情形下，一个程序就是一个表达式（再加上辅助性的定义）</li>
+<li>函数式编程中最关心的是要对<em>什么</em>进行计算，而不是要<em>怎么来</em>进行计算。</li>
+<li>在很多函数式<a href="http://blog.jobbole.com/tag/%E7%BC%96%E7%A8%8B%E8%AF%AD%E8%A8%80/" title="如何选择语言和编程语言排名相关文章" target="_blank" rel="external">编程语言</a>中都会用到“高阶”（higher order）函数<br>(换句话说，高阶函数就是对对函数进行运算的函数进行运算的函数）。</li>
+</ul>
+<p>函数式编程的倡导者们认为，所有这些特性都有助于更快地编写出更多更简洁并且更不容易出Bug的代码。而且，计算机科学、逻辑学和数学这三个领域中的高级理论家发现，函数式编程语言和程序的形式化特性在证明起来比命令式编程语言和程序要简单很多。</p>
+<h2 id="Python内在的函数式功能"><a href="#Python内在的函数式功能" class="headerlink" title="Python内在的函数式功能"></a>Python内在的函数式功能</h2><p>自Python 1.0起，Python就已具有了以上所列中的绝大多数特点。但是就象Python所具有的大多数特性一样，这些特点出现在了一种混合了各种特性的语言中。 和Python的OOP（面向对象编程）特性非常象，你想用多少就用多少，剩下的都可以不管（直到你随后需要用到它们为止）。在Python 2.0中，加入了<em>列表解析</em>（<em>list comprehensions</em>）这个非常好用的”语法糖“。尽管列表解析没有添加什么新功能，但它让很多旧功能看起来好了<em>不少</em>。</p>
+<p>Python中函数式编程的基本要素包括functionsmap()、reduce()、filter()和lambda算子（operator）。<br>在Python 1.x中，apply()函数也可以非常方便地拿来将一个函数的列表返回值直接用于另外一个函数。Python 2.0为此提供了一个改进后的语法。可能有点让人惊奇，使用如此之少的函数（以及基本的算子）几乎就足以写出任何Python程序了；更加特别的是，几乎用不着什么执行流程控制语句。</p>
+<p>所有(if,elif,else,assert,try,except,finally,for,break,continue,while,def)这些都都能通过仅仅使用函数式编程中的函数和算子就能以函数式编程的风格处理好。尽管真正地在程序中完全排除使用所有流程控制命令可能只在想参加”Python混乱编程“大赛（可将Python代码写得跟Lisp代码非常象）时才有意义，但这对理解函数式编程如何通过函数和递归表达流程控制很有价值。</p>
+<h2 id="剔除流程控制语句"><a href="#剔除流程控制语句" class="headerlink" title="剔除流程控制语句"></a>剔除流程控制语句</h2><p>剔除练习首先要考虑的第一件事是，实际上，Python会对布尔表达式求值进行“短路”处理。这就为我们提供了一个if/elif/else分支语句的表达式版（假设每个分支只调用一个函数，不是这种情况时也很容易组织成重新安排成这种情况）。<br>这里给出怎么做：</p>
+<p>对Python中的条件调用进行短路处理</p>
+<pre><code># Normal statement-based flow control
+if &lt;cond1&gt;:   func1()
+elif &lt;cond2&gt;: func2()
+else:         func3()
+
+# Equivalent &quot;short circuit&quot; expression
+(&lt;cond1&gt; and func1()) or (&lt;cond2&gt; and func2()) or (func3())
+
+# Example &quot;short circuit&quot; expression
+&gt;&gt;&gt; x = 3
+&gt;&gt;&gt; def pr(s): return s
+&gt;&gt;&gt; (x==1 and pr(&apos;one&apos;)) or (x==2 and pr(&apos;two&apos;)) or (pr(&apos;other&apos;))
+&apos;other&apos;
+&gt;&gt;&gt; x = 2
+&gt;&gt;&gt; (x==1 and pr(&apos;one&apos;)) or (x==2 and pr(&apos;two&apos;)) or (pr(&apos;other&apos;))
+&apos;two&apos;
+</code></pre><p>我们的表达式版本的条件调用看上去可能不算什么，更象是个小把戏；然而，如果我们注意到lambda算子必须返回一个表达式，这就更值得关注了。既然如我们所示，表达式能够通过短路包含一个条件判断，那么，lambda表达式就是个完全通用的表达条件判断返回值的手段了。我们来一个例子：</p>
+<p>Python中短路的Lambda</p>
+<pre><code>&gt;&gt;&gt; pr = lambda s:s
+&gt;&gt;&gt; namenum = lambda x: (x==1 and pr(&quot;one&quot;)) \
+....                  or (x==2 and pr(&quot;two&quot;)) \
+....                  or (pr(&quot;other&quot;))
+&gt;&gt;&gt; namenum(1)
+&apos;one&apos;
+&gt;&gt;&gt; namenum(2)
+&apos;two&apos;
+&gt;&gt;&gt; namenum(3)
+&apos;other&apos;
+</code></pre><p><strong>将函数作为具有首要地位的对象</strong></p>
+<p>前面的例子已经表明了Python中函数具有首要地位，但有点委婉。当我们用lambda操作创建一个<em>函数对象</em>时，我们所得到的东西是完全通用的。就其本质而言，我们可以将我们的对象同名字”pr”和”namenum”绑定到一起,以完全相同的方式，我们也也完全可以将数字23或者字符串”spam”同这些名字绑定到一起。但是，就象我们可以无需将其绑定到任何名字之上就能直接使用数字23（也就是说，它可以用作函数的参数）一样，我们也可以直接使用我们使用lambda创建的函数对象，而无需将其绑定到任何名字之上。在Python中，函数就是另外一种我们能够就像某种处理的值。</p>
+<p>我们对具有首要地位的对象做的比较多的事情就是，将它们作为参数传递给函数式编程固有的函数map()、reduce()和filter()。这三个函数接受的第一个参数都是一个函数对象。</p>
+<ul>
+<li>map()针对指定给它的一个或多个列表中每一项对应的内容，执行一次作为参数传递给它的那个函数，最后返回一个结果列表。</li>
+<li>reduce()针对每个后继项以及最后结果的累积结果，执行一次作为参数传递给它的那个函数；例如，reduce(lambdan,m:n*m,range(1,10))是求”10的阶乘”的意思（换言之，将每一项和前面所得的乘积进行相乘）</li>
+<li>filter()使用那个作为参数传递给它的函数，对一个列表中的所有项进行”求值“，返回一个由所有能够通过那个函数测试的项组成的经过遴选后的列表。</li>
+</ul>
+<p>我们经常也会把函数对象传递给我们自己定义的函数，不过一般情况下这些自定义的函数就是前文提及的内建函数的某种形式的组合。</p>
+<p>通过组合使用这三种函数式编程内建的函数，能够实现范围惊人的“执行流程”操作(全都不用语句，仅仅使用表达式实现)。</p>
+<h2 id="Python中的函数式循环"><a href="#Python中的函数式循环" class="headerlink" title=" Python中的函数式循环"></a> Python中的函数式循环</h2><p>替换循环语言和条件状态语言块同样简单。for可以直接翻译成map()函数。正如我们的条件执行，我们会需要简化语句块成简单的函数调用（我们正在接近通常能做的）：</p>
+<p>替换循环</p>
+<pre><code>for e in lst:  func(e)      # statement-based loop
+map(func,lst)           # map()-based loop
+</code></pre><p>通过这种方法，对有序程序流将有一个相似的函数式方式。那就是，命令式编程几乎是由大量“做这，然后做那，之后做其它的”语句组成。map()让我们只要做这样：</p>
+<p>Map-based 动作序列</p>
+<pre><code># let&apos;s create an execution utility function
+do_it = lambda f: f()
+
+# let f1, f2, f3 (etc) be functions that perform actions
+
+map(do_it, [f1,f2,f3])   # map()-based action sequence
+</code></pre><p>通常，我们的整个主要的程序都可以使用一个map表达式加上一些函数列表的执行来完成这个程序。最高级别的函数的另一个方便的特性是你可以把它们放在一个列表里。</p>
+<p>翻译while会稍稍复杂一些，但仍然可以直接地完成：</p>
+<p>Python中的函数式”while”循环</p>
+<pre><code># statement-based while loop
+while &lt;cond&gt;:
+    &lt;pre-suite&gt;
+    if &lt;break_condition&gt;:
+        break
+    else:
+        &lt;suite&gt;
+
+# FP-style recursive while loop
+def while_block():
+    &lt;pre-suite&gt;
+    if &lt;break_condition&gt;:
+        return 1
+    else:
+        &lt;suite&gt;
+    return 0
+
+while_FP = lambda: (&lt;cond&gt; and while_block()) or while_FP()
+while_FP()
+</code></pre><p>在翻译while循环时，我们仍然需要使用while_block()函数，这个函数本身里面可以包含语句而不是仅仅包含表达式。但我们可能还能够对这个函数再进行更进一步的剔除过程（就像前面模版中的对if/else进行短路处理一样）。还有，\<cond\>很难对普通的测试有什么用，比如while myvar==7，既然循环体（在设计上）不能对任何变量的值进行修改（当然，在while_block()中可以修改全局变量）。有一种方法可以用来为while_block()添加更有用的条件判断，让while_block()返回一个有意义的值，然后将这个返回值同循环结束条件进行比较。现在应该来看一个剔除其中语句的具体例子了：</cond\></p>
+<p>Python中’echo’循环</p>
+<pre><code># imperative version of &quot;echo()&quot;
+def echo_IMP():
+    while 1:
+        x = raw_input(&quot;IMP -- &quot;)
+        if x == &apos;quit&apos;:
+            break
+        else
+            print x
+echo_IMP()
+
+# utility function for &quot;identity with side-effect&quot;
+def monadic_print(x):
+    print x
+    return x
+
+# FP version of &quot;echo()&quot;
+echo_FP = lambda: monadic_print(raw_input(&quot;FP -- &quot;))==&apos;quit&apos; or echo_FP()
+echo_FP()
+</code></pre><p>在上面的例子中我们所做的，就是想办法将一个涉及I/O、循环和条件判断的小程序，表达为一个递归方式的纯粹的表达式 （确切地说，表达为一个可以在需要的情况下传递到别的地方的函数对象）。我们<em>的确</em>仍然使用了实用函数monadic_print()，但这个函数是完全通用的，而且可以用于以后我们可能会创建的每个函数式程序的表达式中（它的代价是一次性的）。请注意，任何包含monadic_print(x)的表达式的<em>值</em>都是一样的，好像它只是包含了一个x而已。函数式编程中（特别是在Haskell中）的函数有一种叫做”monad”（一元）的概念，这种一元函数“实际什么都不做，只是在执行过程中产生一个副作用”。</p>
+<h2 id="避免副作用"><a href="#避免副作用" class="headerlink" title=" 避免副作用"></a> 避免副作用</h2><p>在做完这些没有非常明智的理由陈述，并把晦涩的嵌套表达式代替他们之后，一个很自然的问题是“为什么要这样做？！”　我描述的函数式编程在Python中都实现了。但是最重要的特性和一个有具体用处——就是避免副作用（或至少它们阻止如monads的特殊区域）。程序错误的大部分——并且这些问题驱使程序员去debug——出现是因为在程序的运行中变量获取了非期望的值。函数式编程简单地通过从不给变量赋值而绕过了这个问题。</p>
+<p>现在让我们看一段非常普通的命令式代码。这段代码的目的是打印出乘积大于25的一对一对数字所组成的一个列表。组成每对数字的每一个数字都是取自另外的两个列表。这种事情和很多程序员在他们的编程中经常做的一些事情比较相似。命令式的解决方式有可能就象下面这样：</p>
+<p>命令式的”打印大乘积”的Python代码</p>
+<pre><code># Nested loop procedural style for finding big products
+xs = (1,2,3,4)
+ys = (10,15,3,22)
+bigmuls = []
+# ...more stuff...
+for x in xs:
+    for y in ys:
+        # ...more stuff...
+        if x*y &gt; 25:
+            bigmuls.append((x,y))
+            # ...more stuff...
+# ...more stuff...
+print bigmuls
+</code></pre><p>这个项目足够小了，好像没有地方会出什么差错。但有可能在这段代码中我们会嵌入一些同时完成其它任务的代码。用”more stuff”（其它代码）注释掉的部分，就是有可能存在导致出现bug的副作用的地方。在那三部分的任何一点上，变量sxs、ys、bigmuls、x、y都有可能在这段按照理想情况简化后的代码中取得一个出人意料的值。还有，这段代码执行完后，后继代码有可能需要也有可能不需要对所有这些变量中的值有所预期。显而易见，将这段代码封装到函数/实例中，小心处理变量的作用范围，就能够避免这种类型的错误。你也可以总是将使用完毕的变量del掉。但在实践中，这里指出的这种类型的错误很常见。</p>
+<p>以一种函数式的途径一举消除这些副作用所产生的错误，这样就达到了我们的目的。一种可能的代码如下：</p>
+<p>以函数式途径达到我们的目的</p>
+<pre><code>bigmuls = lambda xs,ys: filter(lambda (x,y):x*y &gt; 25, combine(xs,ys))
+combine = lambda xs,ys: map(None, xs*len(ys), dupelms(ys,len(xs)))
+dupelms = lambda lst,n: reduce(lambda s,t:s+t, map(lambda l,n=n: [l]*n, lst))
+print bigmuls((1,2,3,4),(10,15,3,22))
+</code></pre><p>在例子中我们绑定我们的匿名（lambda）函数对象到变量名，但严格意义上讲这并不是必须的。我们可以用简单的嵌套定义来代替之。这不仅是为了代码的可读性，我们才这样做的；而且是因为combine()函数在任何地方都是一个非常好的功能函数（函数从两个输入的列表读入数据生成一个相应的pair列表）。函数dupelms()只是用来辅助函数combine()的。即使这个函数式的例子跟命令式的例子显得要累赘些，不过一旦你考虑到功能函数的重用，则新的bigmuls()中代码就会比命令式的那个要稍少些。</p>
+<p>这个函数式例子的真正优点在于：在函数中绝对没有改变变量的值。这样就<strong><em>不可能</em></strong>在之后的代码（或者从之前的代码）中产生不可预期的副作用。显然，在函数中没有副作用，并不能保证代码的正确性，但它仍然是一个优点。无论如何请注意，Python（不像很多其它的函数式语言）不会阻止名字bigmuls，combine和dupelms的再次绑定。如果combine()运行在之后的程序中意味着有所不同时，所有的预测都会失效。你可能会需要新建一个单例类来包含这个不变的绑定（也就是说，s.bigmuls之类的）；但是这一例并没有空间来做这些。</p>
+<p>一个明显值得注意的是，我们特定的目标是定制Python 2的一些特性。而不是命令式的或函数式编程的例子，最好的（也是函数式的）方法是：</p>
+<pre><code>print [(x,y) for x in (1,2,3,4) for y in (10,15,3,22) if x*y &gt; 25]
+</code></pre><h2 id="结束语"><a href="#结束语" class="headerlink" title=" 结束语"></a> 结束语</h2><p>我已经列出了把每一个Python控制流替换成一个相等的函数式代码的方法（在程序中减少副作用）。高效翻译一个特定的程序需要一些额外的思考，但我们已经看出内置的函数式功能是全面且完善的。在接下来的文章里，我们会看到更多函数式编程的高级技巧；并且希望我们接下来能够摸索到函数式编程风格的更多优点和缺点。</p>
+<p><a href="/archives/2013/03/04/python-functional-programming-part1.html" title="Python中函数式编程，第一部分">Python中的函数式编程，第一部分</a></p>
+<p><a href="/archives/2013/04/11/python-functional-programming-part2.html" title="Python中函数式编程，第二部分">Python中的函数式编程，第二部分</a></p>
+<p><a href="/archives/2013/04/25/python-functional-programming-part3.html" title="Python中的函数式编程，第三部分">Python中的函数式编程，第三部分</a></p>
+
+      
+    </div>
+    
+    
+    
+
+    
+    <div style="border: 1px solid black">
+        <div style="margin-left:10px">
+        <span style="font-weight:blod">版权声明</span>
+        <br>
+        <p style="font-size: 10px;line-height: 30px">
+	  <a href="/" style="color:#258FC6">Jon's blog</a> by <a href="/" style="color:#258FC6">Jon</a> is licensed under a <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/" style="color:#258FC6">Creative Commons BY-NC-ND 4.0 International License</a>.<br>
+	  由<a href="/" style="color:#258FC6">Jon</a>创作并维护的<a href="/" style="color:#258FC6">Jon's blog</a>博客采用<a href="https://creativecommons.org/licenses/by-nc-nd/4.0/" style="color:#258FC6">创作共用保留署名-非商业-禁止演绎4.0国际许可证</a>。<br>
+	  本文首发于<a href="/" style="color:#258FC6">Jon</a> 博客（ <a href="/" style="color:#258FC6">Jon</a> ），如若转载请注明出处，版权所有，侵权必究。<br>
+	  本文地址：<a href="/2013/03/04/python-functional-programming-part1/" title="Python中函数式编程，第一部分">http://www.harmap.com/2013/03/04/python-functional-programming-part1/</a>
+        </p>
+        </div>
+    </div>
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/python/" rel="tag"># python</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2013/03/01/what-every-programmer-should-know-about-memory-part1/" rel="next" title="每个程序员都应该了解的内存知识">
+                <i class="fa fa-chevron-left"></i> 每个程序员都应该了解的内存知识
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2013/03/08/efficient-css/" rel="prev" title="翻译-高效的CSS">
+                翻译-高效的CSS <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div id="lv-container" data-id="city" data-uid="MTAyMC8zMDcwMC83MjU1"></div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap" >
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image"
+               src="/images/avatar.gif"
+               alt="Jon" />
+          <p class="site-author-name" itemprop="name">Jon</p>
+           
+              <p class="site-description motion-element" itemprop="description"></p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives/">
+                <span class="site-state-item-count">140</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">10</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">78</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+            
+              <span class="links-of-author-item">
+                <a href="https://github.com/beango" target="_blank" title="GitHub">
+                  
+                    <i class="fa fa-fw fa-github"></i>
+                  
+                    
+                      GitHub
+                    
+                </a>
+              </span>
+            
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Python内在的函数式功能"><span class="nav-number">1.</span> <span class="nav-text">Python内在的函数式功能</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#剔除流程控制语句"><span class="nav-number">2.</span> <span class="nav-text">剔除流程控制语句</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Python中的函数式循环"><span class="nav-number">3.</span> <span class="nav-text"> Python中的函数式循环</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#避免副作用"><span class="nav-number">4.</span> <span class="nav-text"> 避免副作用</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#结束语"><span class="nav-number">5.</span> <span class="nav-text"> 结束语</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright" >
+  
+  &copy; 
+  <span itemprop="copyrightYear">2017</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Jon</span>
+
+  
+  <script src="https://s22.cnzz.com/z_stat.php?id=1266098112&web_id=1266098112" language="JavaScript"></script>
+</div>
+
+
+  <div class="powered-by">由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动</div>
+
+  <span class="post-meta-divider">|</span>
+
+  <div class="theme-info">主题 &mdash; <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">NexT.Mist</a> v5.1.2</div>
+
+
+        
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.2"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.2"></script>
+
+
+
+
+  
+  
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.2"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.2"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+    <div id="lv-container" data-id="city" data-uid="MTAyMC8zMDcwMC83MjU1">
+<script type="text/javascript">
+   (function(d, s) {
+       var j, e = d.getElementsByTagName(s)[0];
+
+       if (typeof LivereTower === 'function') { return; }
+
+       j = d.createElement(s);
+       j.src = 'https://cdn-city.livere.com/js/embed.dist.js';
+       j.async = true;
+
+       e.parentNode.insertBefore(j, e);
+   })(document, 'script');
+</script>
+<noscript>Ϊ����ʹ�����������۹����뼤��JavaScript</noscript>
+</div>
+<!-- City�氲װ��������� -->
+  
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  
+  
+  <link rel="stylesheet" href="/lib/algolia-instant-search/instantsearch.min.css">
+
+  
+  
+  <script src="/lib/algolia-instant-search/instantsearch.min.js"></script>
+  
+
+  <script src="/js/src/algolia-search.js?v=5.1.2"></script>
+
+
+
+  
+
+  
+  <script src="https://cdn1.lncld.net/static/js/av-core-mini-0.6.4.js"></script>
+  <script>AV.initialize("yLPoVJgltlWhPaAI6t5JvbpB-gzGzoHsz", "E4XFKjXzrcUUGbELoAsyQ4Y2");</script>
+  <script>
+    function showTime(Counter) {
+      var query = new AV.Query(Counter);
+      var entries = [];
+      var $visitors = $(".leancloud_visitors");
+
+      $visitors.each(function () {
+        entries.push( $(this).attr("id").trim() );
+      });
+
+      query.containedIn('url', entries);
+      query.find()
+        .done(function (results) {
+          var COUNT_CONTAINER_REF = '.leancloud-visitors-count';
+
+          if (results.length === 0) {
+            $visitors.find(COUNT_CONTAINER_REF).text(0);
+            return;
+          }
+
+          for (var i = 0; i < results.length; i++) {
+            var item = results[i];
+            var url = item.get('url');
+            var time = item.get('time');
+            var element = document.getElementById(url);
+
+            $(element).find(COUNT_CONTAINER_REF).text(time);
+          }
+          for(var i = 0; i < entries.length; i++) {
+            var url = entries[i];
+            var element = document.getElementById(url);
+            var countSpan = $(element).find(COUNT_CONTAINER_REF);
+            if( countSpan.text() == '') {
+              countSpan.text(0);
+            }
+          }
+        })
+        .fail(function (object, error) {
+          console.log("Error: " + error.code + " " + error.message);
+        });
+    }
+
+    function addCount(Counter) {
+      var $visitors = $(".leancloud_visitors");
+      var url = $visitors.attr('id').trim();
+      var title = $visitors.attr('data-flag-title').trim();
+      var query = new AV.Query(Counter);
+
+      query.equalTo("url", url);
+      query.find({
+        success: function(results) {
+          if (results.length > 0) {
+            var counter = results[0];
+            counter.fetchWhenSave(true);
+            counter.increment("time");
+            counter.save(null, {
+              success: function(counter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(counter.get('time'));
+              },
+              error: function(counter, error) {
+                console.log('Failed to save Visitor num, with error message: ' + error.message);
+              }
+            });
+          } else {
+            var newcounter = new Counter();
+            /* Set ACL */
+            var acl = new AV.ACL();
+            acl.setPublicReadAccess(true);
+            acl.setPublicWriteAccess(true);
+            newcounter.setACL(acl);
+            /* End Set ACL */
+            newcounter.set("title", title);
+            newcounter.set("url", url);
+            newcounter.set("time", 1);
+            newcounter.save(null, {
+              success: function(newcounter) {
+                var $element = $(document.getElementById(url));
+                $element.find('.leancloud-visitors-count').text(newcounter.get('time'));
+              },
+              error: function(newcounter, error) {
+                console.log('Failed to create');
+              }
+            });
+          }
+        },
+        error: function(error) {
+          console.log('Error:' + error.code + " " + error.message);
+        }
+      });
+    }
+
+    $(function() {
+      var Counter = AV.Object.extend("Counter");
+      if ($('.leancloud_visitors').length == 1) {
+        addCount(Counter);
+      } else if ($('.post-title-link').length > 1) {
+        showTime(Counter);
+      }
+    });
+  </script>
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
